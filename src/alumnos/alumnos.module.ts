@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import DataURIParser from 'datauri/parser';
 import { AlumnosController } from './alumnos.controller';
 import { AlumnosService } from './alumnos.service';
 import { AlumnoSchema } from './schemas/alumno.schema';
@@ -10,11 +9,13 @@ import { AlumnoSchema } from './schemas/alumno.schema';
     MongooseModule.forFeature([{name: 'Alumnos', schema: AlumnoSchema}], 'ConexionEscuelaDeDanza' )      
   ],
   controllers: [
-    AlumnosController,
-    
+    AlumnosController,    
   ],
   providers: [
     AlumnosService,
+  ],
+  exports: [
+    MongooseModule.forFeature([{name: 'Alumnos', schema: AlumnoSchema}], 'ConexionEscuelaDeDanza' )  
   ]
 })
 export class AlumnosModule {}

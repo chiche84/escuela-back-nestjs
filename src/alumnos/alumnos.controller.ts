@@ -3,10 +3,12 @@ import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { AlumnosService } from './alumnos.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ValidacionAlumnoFieldsPipe } from './pipes/validacionesAlumnos.pipe';
-import { Express } from 'express';
+import { Express, response } from 'express';
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
+import { catchError, map, pipe, Observable } from 'rxjs';
+import { IAlumno } from './interfaces/alumno.interface';
 
 @Controller('alumnos')
 export class AlumnosController {
@@ -28,20 +30,24 @@ export class AlumnosController {
   }))
    async create(@Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res, 
                 @UploadedFiles() files: Express.Multer.File[] ) {
-    //console.log(files['fotoDniFrente'][0].path);   
+      
     try {
-
-      const rutaClou = await this.alumnoServicio.subirImagenaCloudinary(files['fotoDniFrente'][0].path);
-
+      console.log(files);
+      const fotoDniFrente = await this.alumnoServicio.subirImagenaCloudinary(files['fotoDniFrente'][0].path);
+      const fotoDniDorso = await this.alumnoServicio.subirImagenaCloudinary(files['fotoDniDorso'][0].path);
       return res.status(HttpStatus.OK).json({
         ok: true,
-        rutaClou
+        msj: "Se subieron las fotos del dni frente y fondo a Cloudinary",
+        fotoDniFrente, 
+        fotoDniDorso
       })
       
     } catch (error) {
         return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
           ok:false,
-          rutaClou: "nada"
+          msj: error,
+          fotoDniFrente: '', 
+          fotoDniDorso: ''
         })
     } 
 
@@ -76,8 +82,31 @@ export class AlumnosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return //this.alumnoServicio.findOne(+id);
+  findOne(@Param('id') id: string, @Req() req, @Res() res): Observable<IAlumno> {
+    
+      return this.alumnoServicio.alumnoByID(id).pipe(
+       map(resp=> {
+          if (! resp) {
+              return res.status(404).json({
+                ok: true,
+                msj: "No existe el Alumno con el id " + id,
+                alumno: null
+              });
+          }
+          return res.status(200).json({
+            ok: true,
+            msj:"Alumno encontrado",
+            alumno: resp
+          })
+        }),   
+        catchError(err => {
+          return res.status(404).json({
+                  ok: false,
+                  msj: err,
+                  alumno: null
+                });
+        })     
+      );
   }
 
  @Delete(':id')
