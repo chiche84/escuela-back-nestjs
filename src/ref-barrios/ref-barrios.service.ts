@@ -5,8 +5,7 @@ import { concat, concatMap, filter, from, map, mapTo, Observable, of, switchMap,
 import { CreateRefBarrioDto } from './dto/create-ref-barrio.dto';
 import { IRefBarrio } from './interfaces/ref-barrio.interface';
 import { IAlumno } from '../alumnos/interfaces/alumno.interface';
-import { MATCHES } from 'class-validator';
-import { AbstractHttpAdapter } from '@nestjs/core';
+
 
 @Injectable()
 export class RefBarriosService {
@@ -60,79 +59,50 @@ export class RefBarriosService {
   }
 
   
-  // async eliminarBarrio(id: string) {
-  //   let barrio =  await this.refBarrioModel.findById(id);
-  //   if (! barrio) {
-  //     return null;
-  //   }
+  async eliminarBarrio(id: string): Promise<any> {
+  
+    //controlo dependencias antes de eliminar
+    const alumnos = await this.alumnoModel.find({ idRefBarrio: id, estaActivo: true }, 'apellido nombre email'); 
+        if (alumnos.length > 0) {
+            return {
+                ok: false,
+                msj: "Hay alumnos que tienen ese barrio, no se puede eliminar",
+                alumnos
+            };
+        }
 
-  //   // const alumnos = await AlumnoModel.find({ idRefBarrio: id }, 'apellido nombre'); 
-  //   //     if (alumnos.length > 0) {
-  //   //         return res.status(400).json({
-  //   //             ok: true,
-  //   //             msj: "Hay alumnos que tienen ese barrio, no se puede eliminar",
-  //   //             barrio: alumnos
-  //   //         });
-  //   //     }
-  //   barrio.estaActivo = false;
-  //   barrio = await this.refBarrioModel.findByIdAndUpdate(id, barrio, {new: true});
-  //   return barrio;
+    return await this.refBarrioModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});
+  }
+
+  // eliminarBarrio(id: string): Observable<IRefBarrio>{
+  //   //este ejemplo lograr desencadenar el 2do observable pero no logro condicionar su ejecucion, nose como :(... mas adelante lo sabre
+  //   return  from(this.alumnoModel.findOne({ idRefBarrio: id }, "apellido nombre"))
+  //     .pipe(
+  //       tap(resp=> {
+  //             if (resp){               
+  //               console.log("barrio con alumnos");
+  //               return resp;
+  //             }
+  //       }),        
+  //       switchMap((barrio)=>                  
+  //               from(this.refBarrioModel.findByIdAndUpdate(id, {estaActivo: false}, {new: true}))
+  //                 .pipe(
+  //                   map((match) => {   
+  //                     if (barrio) {
+  //                       console.log("NO SE PUEDE ELIMINAR EL BARRIO");
+  //                       match.estaActivo = true;
+  //                       console.log(barrio); 
+  //                       //throw Error;
+  //                     }
+  //                     else {
+  //                       console.log('se puede eliminar el barrio');
+  //                     }
+  //                     console.log("match",match);                    
+  //                     return match;
+  //                   })         
+  //                 ) 
+  //       )
+  //   );
   // }
-  eliminarBarrio(id: string){
-    //este ejemplo lograr desencadenar el 2do observable pero no logro condicionar su ejecucion, nose como
-    return  from(this.alumnoModel.findOne({ idRefBarrio: id }, "apellido nombre"))
-      .pipe(
-        tap(resp=> {
-            //  if (resp){               
-            //    console.log("barrio con alumnos");
-                return resp;
-            //  }
-        }),        
-        switchMap((barrio)=>                  
-                from(this.refBarrioModel.findByIdAndUpdate(id, {estaActivo: false}, {new: true}))
-                  .pipe(
-                    // map((match) => {   
-                    //   if (barrio) {
-                    //     console.log("NO SE PUEDE ELIMINAR EL BARRIO");
-                    //     match.estaActivo = true;
-                    //     console.log(barrio); 
-                    //     //throw Error;
-                    //   }
-                    //   else {
-                    //     console.log('se puede eliminar el barrio');
-                    //   }
-                    //   console.log("match",match);                    
-                    //   return match;
-                    // }),
-                    tap( hola=> {
-                      if (barrio) {
-                        console.log("NO SE PUEDE ELIMINAR EL BARRIO");
-                        hola.estaActivo = true;
-                        console.log(barrio); 
-                        //throw Error;
-                      }
-                      else {
-                        console.log('se puede eliminar el barrio');
-                      }
-                      console.log("match",hola); 
-                    }
 
-                    )
-
-                  ) 
-        )
-    );
-
-    
-     
-  }
-
-  eliminarche(id: string): Observable<any>{
-    return from(this.refBarrioModel.findByIdAndUpdate(id, {estaActivo: false}, {new: true}));
-  }
-  //from(this.refBarrioModel.findByIdAndUpdate(id, {estaActivo: false}, {new: true}))
-
-  buscarBarrioAlumno(id: string):Observable<IAlumno>{
-    return from(this.alumnoModel.findOne({ idRefBarrio: id }, "apellido nombre"));
-  }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Res, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus } from '@nestjs/common';
 import { RefBarriosService } from './ref-barrios.service';
 import { CreateRefBarrioDto } from './dto/create-ref-barrio.dto';
 import { map, Observable, catchError } from 'rxjs';
@@ -191,55 +191,37 @@ export class RefBarriosController {
   }
 
   @Delete(':id')
-  // async remove(@Param('id') id: string,  @Res() res) {
+  async remove(@Param('id') id: string,  @Res() res) {
 
-  //   try {
-  //     let barrio  = await this.refBarriosService.eliminarBarrio(id)
-  //     if (! barrio) {
-  //         return res.status(404).json({
-  //             ok: true,
-  //             msj: "No existe el barrio con el id " + id,
-  //             barrio: null
-  //         });
-  //     }
-     
-  //     return res.status(201).json({
-  //         ok: true,
-  //         msj: "Barrio Eliminado",
-  //         barrio
-  //     })
-  //     } catch (error) {
-  //         return res.status(500).json( {
-  //             ok: false,
-  //             msj: error,
-  //             barrio: null
-  //         })
-  //     }
-  // }
-  eliminar(@Param('id') id: string,  @Res() res): Observable<IRefBarrio>{
-    return this.refBarriosService.eliminarBarrio(id)
-      .pipe(
-        map(barrio => {
-          if (! barrio) {
-            return res.status(404).json({
-                ok: true,
-                msj: "No existe el barrio con el id " + id,
-                barrio: null
-            });
-          }     
-          return res.status(201).json({
+    try {      
+      let respuesta = await this.refBarriosService.eliminarBarrio(id);
+      
+      if (! respuesta) {
+          return res.status(404).json({
+              ok: true,
+              msj: "No existe el barrio con el id " + id,
+              barrio: null
+          });
+      }
+        
+      if (respuesta.ok) {
+        return res.status(201).json({
             ok: true,
             msj: "Barrio Eliminado",
-            barrio
-          }) 
-        }),
-        catchError(err => {
+            barrio: respuesta
+        })          
+      } else {
+          return res.status(HttpStatus.FORBIDDEN).json(respuesta);
+      }
+      
+      
+      } catch (error) {
           return res.status(500).json( {
-            ok: false,
-            msj: err,
-            barrio: null
+              ok: false,
+              msj: error,
+              barrio: null
           })
-        })
-      );
+      }
   }
+  
 }

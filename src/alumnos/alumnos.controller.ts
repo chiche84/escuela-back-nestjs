@@ -1,14 +1,14 @@
-import { Controller, Post, Get, Param, Delete, Body, Req, Res, UseInterceptors, UploadedFile, Query, UploadedFiles, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Get, Param, Delete, Body, Req, Res, UseInterceptors, Query, UploadedFiles, HttpStatus, Put } from '@nestjs/common';
 import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { AlumnosService } from './alumnos.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ValidacionAlumnoFieldsPipe } from './pipes/validacionesAlumnos.pipe';
-import { Express, response } from 'express';
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
-import { catchError, map, pipe, Observable } from 'rxjs';
+import { catchError, map, Observable } from 'rxjs';
 import { IAlumno } from './interfaces/alumno.interface';
+import { createReadStream } from 'fs';
 
 @Controller('alumnos')
 export class AlumnosController {
@@ -28,8 +28,7 @@ export class AlumnosController {
       }
     })
   }))
-   async create(@Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res, 
-                @UploadedFiles() files: Express.Multer.File[] ) {
+   async subirDNIaCloudinary(@Res() res, @UploadedFiles() files: Express.Multer.File[] ) {
       
     try {
       console.log(files);
@@ -50,14 +49,26 @@ export class AlumnosController {
           fotoDniDorso: ''
         })
     } 
-
-    // const alumno = await this.alumnoServicio.create(createAlumnoDto);
-    // return res.status(HttpStatus.OK).json({        
-    //     ok: true,
-    //     alumno,
-    // })
   }
 
+  @Post()
+  async crear(@Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res){    
+    try {
+      const alumno = await this.alumnoServicio.crearAlumno(createAlumnoDto);
+      res.status(201).json({
+          ok: true,
+          msj: "Se creo el alumno",
+          alumno
+      })
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        msj: error,
+        alumno: null
+      })
+    }    
+  }
+    
 
   @Get()
   async ver(@Res() res, 
@@ -110,11 +121,61 @@ export class AlumnosController {
   }
 
  @Delete(':id')
-  remove(@Param('id') id: string) {
+  async eliminar(@Param('id') id: string, @Req() req, @Res() res) {
+
+    try {
+      const alumno = await this.alumnoServicio.eliminarAlumno(id);
+      if (! alumno) {
+        return res.status(404).json({
+            ok: true,
+            msj: "No existe el Alumno con el id " + id,
+            alumno: null
+        });
+      }
+
+      return res.status(200).json({
+        ok: true,
+        msj: "Se elimino el Alumno",
+        alumno
+      })
+    } catch (error) {
+      return res.status(500).json( {
+        ok: false,
+        msj: error,
+        alumno: null
+      })
+    }
     return //this.alumnoServicio.remove(+id);
+
   }
 
+  @Put(':id')
+  async modificar(@Param('id') id: string, @Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res){
+    try {
+        const alumno = await this.alumnoServicio.actualizarAlumno(id, createAlumnoDto);
+        if (! alumno) {
+          return res.status(404).json({
+            ok: true,
+            msj: "No existe el Alumno con el id " + id,
+            alumno: null
+          });
+        }
 
+        return res.status(201).json({
+          ok: true,
+          msj: "Se actualizo el Alumno",
+          alumno
+      })
+      
+    } catch (error) {
+      return res.status(500).json( {
+        ok: false,
+        msj: error,
+        alumno: null
+      })
+    }
+
+  }
 
 
   // // Get Products /product

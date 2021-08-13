@@ -11,7 +11,7 @@ export class AlumnosService {
     constructor(@InjectModel('Alumnos') private readonly alumnoModel: Model<IAlumno>){
     }
     
-      async create(createAlumnoDto: CreateAlumnoDto) {
+      async crearAlumno(createAlumnoDto: CreateAlumnoDto) {
         const newProduct = new this.alumnoModel(createAlumnoDto);
         return  newProduct.save();   
       }
@@ -32,16 +32,29 @@ export class AlumnosService {
         } catch (error) {
             return error;
         }
-    }
+      }
     
-    alumnoByID(id: string): Observable<IAlumno> {
-      return from( this.alumnoModel.findById(id))
-      //   .pipe(
-      //   map((resp) => {
+      alumnoByID(id: string): Observable<IAlumno> {
+        return from( this.alumnoModel.findById(id))
+        //   .pipe(
+        //   map((resp) => {
 
-      //     return resp;         
-      //   }
-      // ))
-    }
+        //     return resp;         
+        //   }
+        // ))
+      }
      
+      async actualizarAlumno(id: string, updateAlumnoDto: CreateAlumnoDto): Promise<IAlumno>{     
+        return await this.alumnoModel.findByIdAndUpdate(id, updateAlumnoDto, {new: true});
+      }
+
+      async eliminarAlumno(id: string): Promise<any> {
+          
+        //controlo dependencias antes de eliminar
+       
+       
+        return await this.alumnoModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});;
+      }
+      
+  
 }
