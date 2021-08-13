@@ -44,7 +44,7 @@ export class AlumnosService {
         // ))
       }
      
-      async actualizarAlumno(id: string, updateAlumnoDto: CreateAlumnoDto): Promise<IAlumno>{     
+      async modificarAlumno(id: string, updateAlumnoDto: CreateAlumnoDto): Promise<IAlumno>{     
         return await this.alumnoModel.findByIdAndUpdate(id, updateAlumnoDto, {new: true});
       }
 

@@ -93,7 +93,7 @@ export class AlumnosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Req() req, @Res() res): Observable<IAlumno> {
+  buscarUno(@Param('id') id: string, @Req() req, @Res() res): Observable<IAlumno> {
     
       return this.alumnoServicio.alumnoByID(id).pipe(
        map(resp=> {
@@ -152,7 +152,7 @@ export class AlumnosController {
   @Put(':id')
   async modificar(@Param('id') id: string, @Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res){
     try {
-        const alumno = await this.alumnoServicio.actualizarAlumno(id, createAlumnoDto);
+        const alumno = await this.alumnoServicio.modificarAlumno(id, createAlumnoDto);
         if (! alumno) {
           return res.status(404).json({
             ok: true,

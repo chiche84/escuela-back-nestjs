@@ -163,7 +163,7 @@ export class RefBarriosController {
   //   }
   // }
   modificar(@Param('id') id: string, @Body() updateRefBarrioDto: CreateRefBarrioDto, @Res() res): Observable<IRefBarrio>{
-    return this.refBarriosService.actualizarBarrio(id, updateRefBarrioDto)
+    return this.refBarriosService.modificarBarrio(id, updateRefBarrioDto)
       .pipe(
         map(barrio => {
           if (! barrio) {
@@ -191,7 +191,7 @@ export class RefBarriosController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string,  @Res() res) {
+  async elimminar(@Param('id') id: string,  @Res() res) {
 
     try {      
       let respuesta = await this.refBarriosService.eliminarBarrio(id);

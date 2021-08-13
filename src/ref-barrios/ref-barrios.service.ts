@@ -54,7 +54,7 @@ export class RefBarriosService {
   //   return barrio;
   // }
 
-  actualizarBarrio(id: string, updateRefBarrioDto: CreateRefBarrioDto): Observable<IRefBarrio>{
+  modificarBarrio(id: string, updateRefBarrioDto: CreateRefBarrioDto): Observable<IRefBarrio>{
    return from(this.refBarrioModel.findByIdAndUpdate(id, updateRefBarrioDto, {new: true}));
   }
 

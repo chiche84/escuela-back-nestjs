@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { AlumnosModule } from './alumnos/alumnos.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RefBarriosModule } from './ref-barrios/ref-barrios.module';
+import { ServiciosModule } from './servicios/servicios.module';
+import { AjustesModule } from './ajustes/ajustes.module';
 
 @Module({
   imports: [ 
@@ -18,7 +20,8 @@ import { RefBarriosModule } from './ref-barrios/ref-barrios.module';
         useCreateIndex: true,
         useFindAndModify: false
     }),      
-    RefBarriosModule,
+    RefBarriosModule, 
+    ServiciosModule, AjustesModule,
   ],
   controllers: [
     AppController
