@@ -7,6 +7,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RefBarriosModule } from './ref-barrios/ref-barrios.module';
 import { ServiciosModule } from './servicios/servicios.module';
 import { AjustesModule } from './ajustes/ajustes.module';
+import { AuthModule } from './auth/auth.module';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
   imports: [ 
@@ -21,7 +23,7 @@ import { AjustesModule } from './ajustes/ajustes.module';
         useFindAndModify: false
     }),      
     RefBarriosModule, 
-    ServiciosModule, AjustesModule,
+    ServiciosModule, AjustesModule, AuthModule, UtilsModule,
   ],
   controllers: [
     AppController
