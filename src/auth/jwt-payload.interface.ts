@@ -1,6 +1,6 @@
 
 export interface IJwtPayload {
-  id: number;
+  id: string;
   nombre: string;
   iat?: Date;
 }

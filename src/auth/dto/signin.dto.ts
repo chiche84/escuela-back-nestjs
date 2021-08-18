@@ -1,8 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class SigninDto {
-  @IsNotEmpty()
-  @IsString()
+
+  id: string;
+  
   nombre: string;
 
   @IsNotEmpty()

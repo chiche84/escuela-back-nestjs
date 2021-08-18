@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { IUsuario } from 'src/usuarios/interfaces/usuario.interface';
 import { compare } from 'bcryptjs';
 import { IJwtPayload } from './jwt-payload.interface';
+import { validarTokenDto } from './dto/validarToken.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,22 +15,24 @@ export class AuthService {
                 @InjectModel('Usuarios') private readonly _usuariosModel: Model<IUsuario>){
     }
 
-    async signin(signinDto: SigninDto): Promise<{ token: string }> {
+    async signin(signinDto: SigninDto): Promise<any>{ //Promise<{ token: string }> {
         const { nombre, email, password } = signinDto;
-    
-        // const user: User = await this._authRepository.findOne({
-        //   where: { username },
-        // });
-    
+        
         const usuario = await this._usuariosModel.findOne({ email, estaActivo: true});        
         if (!usuario) {
-          throw new NotFoundException('user does not exist');
+          throw new NotFoundException({
+            ok: false,
+            msj:'El correo no existe'
+          });
         }
     
         const isMatch = await compare(password, usuario.password);
     
         if (!isMatch) {
-          throw new UnauthorizedException('invalid credentials');
+          throw new UnauthorizedException({
+            ok: false,
+            msj:'El password es incorrecto'
+          });
         }
     
         const payload: IJwtPayload = {
@@ -40,6 +43,30 @@ export class AuthService {
     
         const token = await this._jwtService.sign(payload);
     
-        return { token };
+        return {
+          ok: true,
+          id: usuario._id,
+          nombre: usuario.nombre,
+          token
+        };
       }
+
+    async revalidarToken(validartoken: validarTokenDto): Promise<any> {
+      const { id, nombre } = validartoken;
+
+      
+      const payload: IJwtPayload = {
+        id,
+        nombre
+        //roles: user.roles.map(r => r.name as RoleType),
+      };
+      const token = await this._jwtService.sign(payload); 
+
+      return {
+        ok: true,
+        id, 
+        nombre,
+        token
+      };
+    }
 }
