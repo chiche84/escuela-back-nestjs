@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 export class RefBarriosController {
   constructor(private readonly refBarriosService: RefBarriosService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   // async crear(@Body() createRefBarrioDto: CreateRefBarrioDto, @Res() res) {
 
@@ -88,6 +89,7 @@ export class RefBarriosController {
       );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   // async findOne(@Param('id') id: string, @Res() res) {
   //   try {
@@ -139,6 +141,7 @@ export class RefBarriosController {
       );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   // async update(@Param('id') id: string, @Body() updateRefBarrioDto: CreateRefBarrioDto, @Res() res) {
 
@@ -193,6 +196,7 @@ export class RefBarriosController {
       );
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async elimminar(@Param('id') id: string,  @Res() res) {
 

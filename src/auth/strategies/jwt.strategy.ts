@@ -5,6 +5,7 @@ import { UnauthorizedException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IUsuario } from '../../usuarios/interfaces/usuario.interface';
+import * as jsonwebtoken from 'jsonwebtoken';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -19,7 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: IJwtPayload) {
     const { nombre, id } = payload;
     const user = await this._usuarioModel.findOne({ _id: id, estaActivo: true });
-
+    //automaticamente se revisa si el token es valido (firma) y si no esta caducado, si pasa algo de eso, devuelve unautorized
+    
     if (!user) {
       throw new UnauthorizedException();
     }

@@ -1,11 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpStatus, UseGuards } from '@nestjs/common';
 import { ServiciosService } from './servicios.service';
 import { CreateServicioDto } from './dto/create-servicio.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('servicios')
 export class ServiciosController {
   constructor(private readonly serviciosService: ServiciosService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async crear(@Body() createServicioDto: CreateServicioDto, @Res() res) {
 
@@ -25,6 +27,7 @@ export class ServiciosController {
     }    
   }   
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async ver(@Res() res) {
     try {
@@ -44,6 +47,7 @@ export class ServiciosController {
     }    
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
     async buscarUno(@Param('id') id: string, @Res() res) {
     try {
@@ -69,7 +73,7 @@ export class ServiciosController {
     }    
   }
   
-
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async modificar(@Param('id') id: string, @Body() updateServicioDto: CreateServicioDto, @Res() res) {
 
@@ -97,6 +101,7 @@ export class ServiciosController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async elimminar(@Param('id') id: string,  @Res() res) {
 

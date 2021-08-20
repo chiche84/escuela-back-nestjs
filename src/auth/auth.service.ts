@@ -54,7 +54,6 @@ export class AuthService {
     async revalidarToken(validartoken: validarTokenDto): Promise<any> {
       const { id, nombre } = validartoken;
 
-      
       const payload: IJwtPayload = {
         id,
         nombre

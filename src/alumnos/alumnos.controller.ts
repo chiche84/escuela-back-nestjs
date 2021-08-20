@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Param, Delete, Body, Req, Res, UseInterceptors, Query, UploadedFiles, HttpStatus, Put } from '@nestjs/common';
+import { Controller, Post, Get, Param, Delete, Body, Req, Res, UseInterceptors, Query, UploadedFiles, HttpStatus, Put, UseGuards } from '@nestjs/common';
 import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { AlumnosService } from './alumnos.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -9,11 +9,14 @@ import { v4 as uuidv4 } from 'uuid';
 import { catchError, map, Observable } from 'rxjs';
 import { IAlumno } from './interfaces/alumno.interface';
 import { createReadStream } from 'fs';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('alumnos')
 export class AlumnosController {
-    constructor(private readonly alumnoServicio: AlumnosService) {}
+    
+  constructor(private readonly alumnoServicio: AlumnosService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('subirdni')
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'fotoDniFrente', maxCount: 1},
@@ -51,6 +54,7 @@ export class AlumnosController {
     } 
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async crear(@Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res){    
     try {
@@ -69,7 +73,7 @@ export class AlumnosController {
     }    
   }
     
-
+  @UseGuards(JwtAuthGuard)
   @Get()
   async ver(@Res() res, 
             @Query('fields', new ValidacionAlumnoFieldsPipe() ) queryFields ,
@@ -92,6 +96,7 @@ export class AlumnosController {
     }    
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   buscarUno(@Param('id') id: string, @Req() req, @Res() res): Observable<IAlumno> {
     
@@ -120,7 +125,8 @@ export class AlumnosController {
       );
   }
 
- @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
   async eliminar(@Param('id') id: string, @Req() req, @Res() res) {
 
     try {
@@ -149,6 +155,7 @@ export class AlumnosController {
 
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async modificar(@Param('id') id: string, @Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res){
     try {
