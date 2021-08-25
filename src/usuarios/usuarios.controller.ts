@@ -5,12 +5,12 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 
 @Controller('usuarios')
 export class UsuariosController {
-  constructor(private readonly usuariosService: UsuariosService) {}
+  constructor(private readonly _usuariosService: UsuariosService) {}
 
   @Post()
   async create(@Body() createUsuarioDto: CreateUsuarioDto,  @Res() res) {
     try {      
-      let respuesta = await this.usuariosService.crearUsuario(createUsuarioDto);
+      let respuesta = await this._usuariosService.crearUsuario(createUsuarioDto);
       
      
       if (respuesta) {
@@ -39,21 +39,21 @@ export class UsuariosController {
 
   @Get()
   findAll() {
-    return this.usuariosService.findAll();
+    return this._usuariosService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usuariosService.findOne(+id);
+    return this._usuariosService.findOne(+id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuariosService.update(+id, updateUsuarioDto);
+    return this._usuariosService.update(+id, updateUsuarioDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usuariosService.remove(+id);
+    return this._usuariosService.remove(+id);
   }
 }

@@ -50,7 +50,7 @@ export class RefBarriosController {
       );
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Get()
   // async ver(@Res() res) {
   //   try {

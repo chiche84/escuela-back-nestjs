@@ -7,6 +7,7 @@ export const UsuarioSchema = new Schema({
     rol: { type: String, require: true, default: 'USER_ROLE' },
     google: { type: Boolean, default: false },
     facebook: { type: Boolean, default: false },
+    img: { type: String, default: ''},
     estaActivo: { type: Boolean, require: true, default: true }
 },
 { 

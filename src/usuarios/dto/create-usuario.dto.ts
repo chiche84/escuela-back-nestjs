@@ -5,4 +5,5 @@ export class CreateUsuarioDto {
     rol: string;
     google: boolean;
     facebook: boolean;
+    img?: string;
 }
