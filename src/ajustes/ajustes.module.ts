@@ -9,6 +9,9 @@ import { AjusteSchema } from './schemas/ajuste.schema';
     MongooseModule.forFeature([{name: 'Ajustes', schema: AjusteSchema}], 'ConexionEscuelaDeDanza' ),
   ],
   controllers: [AjustesController],
-  providers: [AjustesService]
+  providers: [AjustesService],
+  exports: [
+    MongooseModule.forFeature([{name: 'Ajustes', schema: AjusteSchema}], 'ConexionEscuelaDeDanza')
+  ]
 })
 export class AjustesModule {}

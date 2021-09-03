@@ -15,11 +15,11 @@ export class AjustesService {
   }
 
   async verAjustes(): Promise<IAjuste[]> {
-    return await this.ajustesModel.find({ estaActivo: true});
+    return await this.ajustesModel.find({ estaActivo: true}).populate({ path:'idServicioAfectado', select: 'descripcion' });
   }
 
   async ajusteById(id: string): Promise<IAjuste> {
-    return await this.ajustesModel.findById(id);
+    return await this.ajustesModel.findById(id).populate({ path:'idServicioAfectado', select: 'descripcion' });
   }
 
   async modificarAjuste(id: string, updateAjusteDto: CreateAjusteDto): Promise<IAjuste> {
@@ -29,6 +29,14 @@ export class AjustesService {
   async eliminarAjuste(id: string): Promise<any> {
     //TODO: controlo dependencias antes de eliminar:
     //ajustesxservicioxalumno
-    return await this.ajustesModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});
+    const ajusteEliminado = await this.ajustesModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});
+    if (ajusteEliminado) {
+      return {
+        ok: true,
+        msj: "Ajuste Eliminado",
+        ajusteEliminado
+      };
+    } 
+    return null;
   }
 }

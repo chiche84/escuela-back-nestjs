@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGu
 import { AjustesService } from './ajustes.service';
 import { CreateAjusteDto } from './dto/create-ajuste.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import * as jsonwebtoken from 'jsonwebtoken';
 
 @Controller('ajustes')
 export class AjustesController {
@@ -19,7 +20,7 @@ export class AjustesController {
           ajuste
         })   
     } catch (error) {
-        return res.status(500).json({
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           ok: false,
           msj: error,
           ajuste: null
@@ -31,18 +32,18 @@ export class AjustesController {
   @Get()
   async ver(@Res() res) {
     try {
-      const ajuste = await this.ajustesService.verAjustes();
+      const ajustes = await this.ajustesService.verAjustes();
       
       return res.status(200).json({
         ok: true,
         msj:"Lista de Ajustes",
-        ajuste
+        ajustes
     })
     } catch (error) {
         return res.status(500).json({
           ok: false,
           msj: error,
-          ajuste: null
+          ajustes: null
         })
     }    
   }
@@ -56,7 +57,7 @@ export class AjustesController {
         return res.status(404).json({
             ok: true,
             msj: "No existe el ajuste con el id " + id,
-            servicio: null
+            ajuste: null
         });
     }
     return res.status(200).json({
@@ -103,7 +104,7 @@ export class AjustesController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async elimminar(@Param('id') id: string,  @Res() res) {
+  async eliminar(@Param('id') id: string,  @Res() res) {
 
     try {      
       let respuesta = await this.ajustesService.eliminarAjuste(id);
@@ -114,21 +115,16 @@ export class AjustesController {
               msj: "No existe el ajuste con el id " + id,
               ajuste: null
           });
-      }
-        
-      if (respuesta.ok) {
-        return res.status(201).json({
-            ok: true,
-            msj: "Ajuste Eliminado",
-            ajuste: respuesta
-        })          
-      } else {
-          return res.status(HttpStatus.FORBIDDEN).json(respuesta);
-      }
-      
+      }else {
+        if (respuesta.ok) {
+          return res.status(HttpStatus.CREATED).json(respuesta)
+        }else{
+          return res.status(HttpStatus.PRECONDITION_FAILED).json(respuesta);
+        }             
+      }              
       
       } catch (error) {
-          return res.status(500).json( {
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json( {
               ok: false,
               msj: error,
               ajuste: null

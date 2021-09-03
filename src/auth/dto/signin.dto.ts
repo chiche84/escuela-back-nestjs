@@ -6,11 +6,11 @@ export class SigninDto {
   
   nombre: string;
 
-  @IsNotEmpty()
-  @IsString()
+  //@IsNotEmpty()
+  //@IsString()
   email: string;
 
-  @IsNotEmpty()
-  @IsString()
+ // @IsNotEmpty()
+  //@IsString()
   password: string;
 }

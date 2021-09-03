@@ -1,4 +1,4 @@
-export interface IAlumno extends Document  {
+export interface IAlumno extends Document  {    
     apellido: string;
     nombre: string;
     fechaNacimiento: string;

@@ -11,9 +11,8 @@ export class AlumnosService {
     constructor(@InjectModel('Alumnos') private readonly alumnoModel: Model<IAlumno>){
     }
     
-      async crearAlumno(createAlumnoDto: CreateAlumnoDto) {
-        const newProduct = new this.alumnoModel(createAlumnoDto);
-        return  newProduct.save();   
+      async crearAlumno(createAlumnoDto: CreateAlumnoDto): Promise<IAlumno> {
+        return  await this.alumnoModel.create(createAlumnoDto);   
       }
     
       async verAlumnos(qcampos: string[]): Promise<IAlumno[]> {        
@@ -50,10 +49,16 @@ export class AlumnosService {
 
       async eliminarAlumno(id: string): Promise<any> {
           
-        //controlo dependencias antes de eliminar
-       
-       
-        return await this.alumnoModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});;
+        //TODO: controlo dependencias antes de eliminar
+        const alumnoEliminado = await this.alumnoModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});
+        if (alumnoEliminado) {
+          return {
+            ok: true,
+            msj: 'Alumno Eliminado',
+            alumnoEliminado
+          }
+        }
+        return null;
       }
       
   

@@ -198,32 +198,28 @@ export class RefBarriosController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async elimminar(@Param('id') id: string,  @Res() res) {
+  async eliminar(@Param('id') id: string,  @Res() res) {
 
     try {      
       let respuesta = await this.refBarriosService.eliminarBarrio(id);
       
       if (! respuesta) {
-          return res.status(404).json({
+          return res.status(HttpStatus.NOT_FOUND).json({
               ok: true,
               msj: "No existe el barrio con el id " + id,
               barrio: null
           });
-      }
-        
-      if (respuesta.ok) {
-        return res.status(201).json({
-            ok: true,
-            msj: "Barrio Eliminado",
-            barrio: respuesta
-        })          
-      } else {
-          return res.status(HttpStatus.FORBIDDEN).json(respuesta);
-      }
-      
+      }else{
+        if (respuesta.ok) {
+          return res.status(HttpStatus.CREATED).json(respuesta)  
+        }else{
+          return res.status(HttpStatus.PRECONDITION_FAILED).json(respuesta); //si no lo mando con el estatus de error, el obs del front en angular no entra al catcherror
+          //return res.json(respuesta);
+        }
+      }              
       
       } catch (error) {
-          return res.status(500).json( {
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json( {
               ok: false,
               msj: error,
               barrio: null

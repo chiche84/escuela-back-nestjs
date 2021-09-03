@@ -34,7 +34,7 @@ export class AlumnosController {
    async subirDNIaCloudinary(@Res() res, @UploadedFiles() files: Express.Multer.File[] ) {
       
     try {
-      console.log(files);
+      //console.log(files);
       const fotoDniFrente = await this.alumnoServicio.subirImagenaCloudinary(files['fotoDniFrente'][0].path);
       const fotoDniDorso = await this.alumnoServicio.subirImagenaCloudinary(files['fotoDniDorso'][0].path);
       return res.status(HttpStatus.OK).json({
@@ -58,14 +58,16 @@ export class AlumnosController {
   @Post()
   async crear(@Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res){    
     try {
+      console.log(createAlumnoDto);
       const alumno = await this.alumnoServicio.crearAlumno(createAlumnoDto);
-      res.status(201).json({
+      console.log(alumno);
+      res.status(HttpStatus.CREATED).json({
           ok: true,
           msj: "Se creo el alumno",
           alumno
       })
     } catch (error) {
-      res.status(500).json({
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         ok: false,
         msj: error,
         alumno: null
@@ -130,29 +132,28 @@ export class AlumnosController {
   async eliminar(@Param('id') id: string, @Req() req, @Res() res) {
 
     try {
-      const alumno = await this.alumnoServicio.eliminarAlumno(id);
-      if (! alumno) {
-        return res.status(404).json({
+      const respuesta = await this.alumnoServicio.eliminarAlumno(id);
+      if (! respuesta) {
+        return res.status(HttpStatus.NOT_FOUND).json({
             ok: true,
             msj: "No existe el Alumno con el id " + id,
             alumno: null
         });
-      }
+      }else{
+        if (respuesta.ok) {
+          return res.status(HttpStatus.CREATED).json(respuesta)  
+        }else{
+          return res.status(HttpStatus.PRECONDITION_FAILED).json(respuesta);
+        }
+      }      
 
-      return res.status(200).json({
-        ok: true,
-        msj: "Se elimino el Alumno",
-        alumno
-      })
     } catch (error) {
-      return res.status(500).json( {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json( {
         ok: false,
         msj: error,
         alumno: null
       })
     }
-    return //this.alumnoServicio.remove(+id);
-
   }
 
   @UseGuards(JwtAuthGuard)

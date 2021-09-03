@@ -63,15 +63,23 @@ export class RefBarriosService {
   
     //controlo dependencias antes de eliminar
     const alumnos = await this.alumnoModel.find({ idRefBarrio: id, estaActivo: true }, 'apellido nombre email'); 
-        if (alumnos.length > 0) {
-            return {
-                ok: false,
-                msj: "Hay alumnos que tienen ese barrio, no se puede eliminar",
-                alumnos
-            };
-        }
+      if (alumnos.length > 0) {
+          return {
+              ok: false,
+              msj: "Hay alumnos que tienen ese Barrio, no se puede eliminar",
+              alumnos
+          };
+      }
+    const barrioEliminado = await this.refBarrioModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});
+    if (barrioEliminado) {      
+      return {
+        ok: true,
+        msj: "Barrio Eliminado",
+        barrioEliminado
+      }; 
+    }
 
-    return await this.refBarrioModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});
+    return null;
   }
 
   // eliminarBarrio(id: string): Observable<IRefBarrio>{

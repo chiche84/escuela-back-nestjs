@@ -103,32 +103,27 @@ export class ServiciosController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async elimminar(@Param('id') id: string,  @Res() res) {
+  async eliminar(@Param('id') id: string,  @Res() res) {
 
     try {      
       let respuesta = await this.serviciosService.eliminarServicio(id);
       
       if (! respuesta) {
-          return res.status(404).json({
+          return res.status(HttpStatus.NOT_FOUND).json({
               ok: true,
               msj: "No existe el servicio con el id " + id,
               servicio: null
           });
-      }
-        
-      if (respuesta.ok) {
-        return res.status(201).json({
-            ok: true,
-            msj: "Servicio Eliminado",
-            servicio: respuesta
-        })          
-      } else {
-          return res.status(HttpStatus.FORBIDDEN).json(respuesta);
-      }
-      
+      }else{
+        if (respuesta.ok) {
+          return res.status(HttpStatus.CREATED).json(respuesta)  
+        }else{
+          return res.status(HttpStatus.PRECONDITION_FAILED).json(respuesta); 
+        }
+      }       
       
       } catch (error) {
-          return res.status(500).json( {
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json( {
               ok: false,
               msj: error,
               servicio: null
