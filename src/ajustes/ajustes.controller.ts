@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
 import { AjustesService } from './ajustes.service';
 import { CreateAjusteDto } from './dto/create-ajuste.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import * as jsonwebtoken from 'jsonwebtoken';
+import { Response } from 'express';
 
 @Controller('ajustes')
 export class AjustesController {
@@ -10,63 +10,63 @@ export class AjustesController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async crear(@Body() createAjusteDto: CreateAjusteDto, @Res() res) {
+  async crear(@Body() createAjusteDto: CreateAjusteDto) {
 
     try {
         const ajuste = await this.ajustesService.crearAjuste(createAjusteDto);
-        return res.status(201).json({
+        return {
           ok: true,
           msj: "Se creo el ajuste",
           ajuste
-        })   
+        }   
     } catch (error) {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        throw new HttpException({
           ok: false,
           msj: error,
           ajuste: null
-        })    
+        },HttpStatus.INTERNAL_SERVER_ERROR);      
     }    
   }   
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async ver(@Res() res) {
+  async ver() {
     try {
       const ajustes = await this.ajustesService.verAjustes();
       
-      return res.status(HttpStatus.CREATED).json({
+      return {
         ok: true,
         msj:"Lista de Ajustes",
         ajustes
-    })
+      }
     } catch (error) {
-        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        throw new HttpException({ 
           ok: false,
           msj: error,
           ajustes: null
-        })
+        },HttpStatus.INTERNAL_SERVER_ERROR);
     }    
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-    async buscarUno(@Param('id') id: string, @Res() res) {
+    async buscarUno(@Param('id') id: string, @Res() res: Response) {
     try {
       const ajuste = await this.ajustesService.ajusteById(id);
       if (! ajuste) {
-        return res.status(404).json({
+        return res.status(HttpStatus.NOT_FOUND).json({
             ok: true,
             msj: "No existe el ajuste con el id " + id,
             ajuste: null
         });
     }
-    return res.status(200).json({
+    return res.status(HttpStatus.OK).json({
         ok: true,
         msj: "Ajuste encontrado",
         ajuste
     })
     } catch (error) {
-      return res.status(500).json({
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         ok: false,
         msj: error,
         ajuste: null
@@ -76,25 +76,25 @@ export class AjustesController {
   
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async modificar(@Param('id') id: string, @Body() updateAjusteDto: CreateAjusteDto, @Res() res) {
+  async modificar(@Param('id') id: string, @Body() updateAjusteDto: CreateAjusteDto, @Res() res: Response) {
 
     try {
       let ajuste  = await this.ajustesService.modificarAjuste(id, updateAjusteDto)
       if (! ajuste) {
-        return res.status(404).json({
+        return res.status(HttpStatus.NOT_FOUND).json({
             ok: true,
             msj: "No existe el ajuste con el id " + id,
             ajuste: null
         });
     }
      
-      return res.status(201).json({
+      return res.status(HttpStatus.OK).json({
           ok: true,
           msj: "Ajuste Actualizado",
           ajuste
       })
       } catch (error) {
-        return res.status(500).json( {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json( {
           ok: false,
           msj: error,
           ajuste: null
@@ -110,14 +110,14 @@ export class AjustesController {
       let respuesta = await this.ajustesService.eliminarAjuste(id);
       
       if (! respuesta) {
-          return res.status(404).json({
+          return res.status(HttpStatus.NOT_FOUND).json({
               ok: true,
               msj: "No existe el ajuste con el id " + id,
               ajuste: null
           });
       }else {
         if (respuesta.ok) {
-          return res.status(HttpStatus.CREATED).json(respuesta)
+          return res.status(HttpStatus.OK).json(respuesta)
         }else{
           return res.status(HttpStatus.PRECONDITION_FAILED).json(respuesta);
         }             

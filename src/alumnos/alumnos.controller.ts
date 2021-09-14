@@ -10,6 +10,7 @@ import { catchError, map, Observable } from 'rxjs';
 import { IAlumno } from './interfaces/alumno.interface';
 import { createReadStream } from 'fs';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Response } from 'express';
 
 @Controller('alumnos')
 export class AlumnosController {
@@ -31,7 +32,7 @@ export class AlumnosController {
       }
     })
   }))
-   async subirDNIaCloudinary(@Res() res, @UploadedFiles() files: Express.Multer.File[] ) {
+   async subirDNIaCloudinary(@Res() res: Response, @UploadedFiles() files: Express.Multer.File[] ) {
       
     try {
       //console.log(files);
@@ -56,7 +57,7 @@ export class AlumnosController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async crear(@Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res){    
+  async crear(@Body() createAlumnoDto: CreateAlumnoDto, @Res() res: Response){    
     try {
       console.log(createAlumnoDto);
       const alumno = await this.alumnoServicio.crearAlumno(createAlumnoDto);
@@ -77,20 +78,20 @@ export class AlumnosController {
     
   @UseGuards(JwtAuthGuard)
   @Get()
-  async ver(@Res() res, 
+  async ver(@Res() res: Response, 
             @Query('fields', new ValidacionAlumnoFieldsPipe() ) queryFields ,
             @Query('cant') queryCant: string ) {
 
     try {
       const alumnos = await this.alumnoServicio.verAlumnos(queryFields);
       
-      res.status(200).json({
+      res.status(HttpStatus.OK).json({
           ok: true,
           msj: "Lista de Alumnos",
           alumnos
       })
     } catch (error) {
-        res.status(500).json({
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             ok: false,
             msj: error,
             alumnos: null
@@ -100,25 +101,25 @@ export class AlumnosController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  buscarUno(@Param('id') id: string, @Req() req, @Res() res): Observable<IAlumno> {
+  buscarUno(@Param('id') id: string, @Res() res): Observable<IAlumno> {
     
       return this.alumnoServicio.alumnoByID(id).pipe(
        map(resp=> {
           if (! resp) {
-              return res.status(404).json({
+              return res.status(HttpStatus.NOT_FOUND).json({
                 ok: true,
                 msj: "No existe el Alumno con el id " + id,
                 alumno: null
               });
           }
-          return res.status(200).json({
+          return res.status(HttpStatus.OK).json({
             ok: true,
             msj:"Alumno encontrado",
             alumno: resp
           })
         }),   
         catchError(err => {
-          return res.status(404).json({
+          return res.status(HttpStatus.NOT_FOUND).json({
                   ok: false,
                   msj: err,
                   alumno: null
@@ -129,7 +130,7 @@ export class AlumnosController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async eliminar(@Param('id') id: string, @Req() req, @Res() res) {
+  async eliminar(@Param('id') id: string, @Res() res) {
 
     try {
       const respuesta = await this.alumnoServicio.eliminarAlumno(id);
@@ -141,7 +142,7 @@ export class AlumnosController {
         });
       }else{
         if (respuesta.ok) {
-          return res.status(HttpStatus.CREATED).json(respuesta)  
+          return res.status(HttpStatus.OK).json(respuesta)  
         }else{
           return res.status(HttpStatus.PRECONDITION_FAILED).json(respuesta);
         }
@@ -158,25 +159,25 @@ export class AlumnosController {
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async modificar(@Param('id') id: string, @Body() createAlumnoDto: CreateAlumnoDto, @Req() req, @Res() res){
+  async modificar(@Param('id') id: string, @Body() createAlumnoDto: CreateAlumnoDto, @Res() res){
     try {
         const alumno = await this.alumnoServicio.modificarAlumno(id, createAlumnoDto);
         if (! alumno) {
-          return res.status(404).json({
+          return res.status(HttpStatus.NOT_FOUND).json({
             ok: true,
             msj: "No existe el Alumno con el id " + id,
             alumno: null
           });
         }
 
-        return res.status(201).json({
+        return res.status(HttpStatus.OK).json({
           ok: true,
           msj: "Se actualizo el Alumno",
           alumno
       })
       
     } catch (error) {
-      return res.status(500).json( {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json( {
         ok: false,
         msj: error,
         alumno: null

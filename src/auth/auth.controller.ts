@@ -4,6 +4,7 @@ import { SigninDto } from './dto/signin.dto';
 import { validarTokenDto } from './dto/validarToken.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { GoogleAuthGuard } from './google-auth.guard';
+import { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -31,7 +32,7 @@ export class AuthController {
   
     @Get('/google/callback')
     @UseGuards(GoogleAuthGuard)
-    async googleAuthRedirect(@Req() req, @Res() res) {
+    async googleAuthRedirect(@Req() req:Request, @Res() res: Response) {
       //aca... con el cliente llame a la venta de la googlestrategy, que me retorna a este callback con el token de google
 
       //primero debo comprobar si es nuevo o no y guardar
@@ -47,7 +48,7 @@ export class AuthController {
                token: resultado.token
            }));
            console.log(resultado);
-           return res.status(200).send(responseHTML); 
+           return res.status(HttpStatus.OK).send(responseHTML); 
       }
       else
       {
@@ -56,7 +57,7 @@ export class AuthController {
     }
 
     @Post('/google/verificar')
-    async googleVerificar(@Req() req) {
+    async googleVerificar(@Req() req: Request) {
       //uso este metodo si es que ya traigo el token de google desde el cliente
       //primero debo comprobar si es nuevo o no y guardar
       return await this._authService.googleLoginAngularx(req);

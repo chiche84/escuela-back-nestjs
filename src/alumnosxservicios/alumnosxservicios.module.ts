@@ -9,6 +9,9 @@ import { AlumnosxServiciosSchema } from './schemas/alumnoxservicio.schema';
     MongooseModule.forFeature([{name: 'AlumnosxServicios', schema: AlumnosxServiciosSchema}], 'ConexionEscuelaDeDanza')
   ],
   controllers: [AlumnosxserviciosController],
-  providers: [AlumnosxserviciosService]
+  providers: [AlumnosxserviciosService],
+  exports: [
+    MongooseModule.forFeature([{name: 'AlumnosxServicios', schema: AlumnosxServiciosSchema}], 'ConexionEscuelaDeDanza')
+  ]
 })
 export class AlumnosxserviciosModule {}

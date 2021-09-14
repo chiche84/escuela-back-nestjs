@@ -1,9 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
 import { RefBarriosService } from './ref-barrios.service';
 import { CreateRefBarrioDto } from './dto/create-ref-barrio.dto';
 import { map, Observable, catchError } from 'rxjs';
 import { IRefBarrio } from './interfaces/ref-barrio.interface';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('refbarrios')
@@ -40,7 +39,7 @@ export class RefBarriosController {
                   barrio
             }) 
           }),  
-        catchError( err => {
+        catchError( err => {          
             return res.status(500).json({
                 ok: false,
                 msj: err,

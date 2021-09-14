@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateAlumnosxservicioDto } from './dto/create-alumnosxservicio.dto';
-import { UpdateAlumnosxservicioDto } from './dto/update-alumnosxservicio.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IAlumnoxServicio } from './interfaces/alumnosxservicios.interface';
@@ -21,15 +20,17 @@ export class AlumnosxserviciosService {
                                                                       .populate({path: 'idServicio', select: 'descripcion' });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} alumnosxservicio`;
+  async alumnoxServicioByIdAlumno(idAlumno: string): Promise<IAlumnoxServicio[]> {
+    return await this.serviciosxAlumnoModel.find({ estaActivo: true, idAlumno: idAlumno}).populate({path: 'idAlumno', select: 'apellido nombre'})
+                                                                                          .populate({path: 'idServicio', select: 'descripcion' });
   }
 
-  update(id: number, updateAlumnosxservicioDto: UpdateAlumnosxservicioDto) {
-    return `This action updates a #${id} alumnosxservicio`;
+  async modificarAlumnoxServicio(id: string, updateAlumnosxservicioDto: CreateAlumnosxservicioDto) {
+    return await this.serviciosxAlumnoModel.findByIdAndUpdate(id, updateAlumnosxservicioDto, { new: true});
   }
 
-  remove(id: number) {
+  async eliminarAlumnoxServicio(id: string) {
+    //TODO: controlar que no debe tener servicios generados
     return `This action removes a #${id} alumnosxservicio`;
   }
 }

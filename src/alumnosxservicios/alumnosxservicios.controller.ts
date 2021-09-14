@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, HttpStatus, HttpException } from '@nestjs/common';
 import { AlumnosxserviciosService } from './alumnosxservicios.service';
 import { CreateAlumnosxservicioDto } from './dto/create-alumnosxservicio.dto';
-import { UpdateAlumnosxservicioDto } from './dto/update-alumnosxservicio.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Response } from 'express';
 
@@ -69,17 +68,59 @@ export class AlumnosxserviciosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.alumnosxserviciosService.findOne(+id);
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const alumnoxservicios = await this.alumnosxserviciosService.alumnoxServicioByIdAlumno(id);
+
+      if ( alumnoxservicios.length == 0) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+            ok: true,
+            msj: "El alumno con el id " + id + ' no tiene servicios',
+            alumnoxservicios: null
+        });
+    }
+    return res.status(HttpStatus.OK).json({
+        ok: true,
+        msj: "Alumno con Servicios encontrado",
+        alumnoxservicios
+    })
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        ok: false,
+        msj: error,
+        alumnoxservicios: null
+      })
+    }    
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlumnosxservicioDto: UpdateAlumnosxservicioDto) {
-    return this.alumnosxserviciosService.update(+id, updateAlumnosxservicioDto);
+  async update(@Param('id') id: string, @Body() updateAlumnosxservicioDto: CreateAlumnosxservicioDto, @Res() res: Response) {    
+    try {
+      let alumnoxservicio  = await this.alumnosxserviciosService.modificarAlumnoxServicio(id, updateAlumnosxservicioDto)
+      if (! alumnoxservicio) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+            ok: true,
+            msj: "No existe el Alumno x Servicio con el id " + id,
+            alumnoxservicio: null
+        });
+    }
+     
+      return res.status(HttpStatus.OK).json({
+          ok: true,
+          msj: "Alumno x Servicio Actualizado",
+          alumnoxservicio
+      })
+      } catch (error) {
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json( {
+          ok: false,
+          msj: error,
+          alumnoxservicio: null
+        })
+    }
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.alumnosxserviciosService.remove(+id);
+    return ;
   }
 }
