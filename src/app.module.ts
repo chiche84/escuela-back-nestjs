@@ -9,6 +9,7 @@ import { ServiciosModule } from './servicios/servicios.module';
 import { AjustesModule } from './ajustes/ajustes.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { AuthModule } from './auth/auth.module';
+import { AlumnosxserviciosModule } from './alumnosxservicios/alumnosxservicios.module';
 
 @Module({
   imports: [ 
@@ -25,7 +26,7 @@ import { AuthModule } from './auth/auth.module';
         useFindAndModify: false,        
     }),      
     RefBarriosModule, 
-    ServiciosModule, UsuariosModule, 
+    ServiciosModule, UsuariosModule, AlumnosxserviciosModule, 
   ],
   controllers: [
     AppController

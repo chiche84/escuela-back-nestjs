@@ -34,13 +34,13 @@ export class AjustesController {
     try {
       const ajustes = await this.ajustesService.verAjustes();
       
-      return res.status(200).json({
+      return res.status(HttpStatus.CREATED).json({
         ok: true,
         msj:"Lista de Ajustes",
         ajustes
     })
     } catch (error) {
-        return res.status(500).json({
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           ok: false,
           msj: error,
           ajustes: null
