@@ -10,7 +10,7 @@ import { AjustesModule } from './ajustes/ajustes.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { AuthModule } from './auth/auth.module';
 import { AlumnosxserviciosModule } from './alumnosxservicios/alumnosxservicios.module';
-import { AjuestesxserviciosxalumnosModule } from './ajuestesxserviciosxalumnos/ajuestesxserviciosxalumnos.module';
+import { AjustesxserviciosxalumnosModule } from './ajuestesxserviciosxalumnos/ajustesxserviciosxalumnos.module';
 
 @Module({
   imports: [ 
@@ -27,7 +27,7 @@ import { AjuestesxserviciosxalumnosModule } from './ajuestesxserviciosxalumnos/a
         useFindAndModify: false,        
     }),      
     RefBarriosModule, 
-    ServiciosModule, UsuariosModule, AlumnosxserviciosModule, AjuestesxserviciosxalumnosModule, 
+    ServiciosModule, UsuariosModule, AlumnosxserviciosModule, AjustesxserviciosxalumnosModule, 
   ],
   controllers: [
     AppController

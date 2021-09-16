@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateAjuestesxserviciosxalumnoDto } from './dto/create-ajuestesxserviciosxalumno.dto';
+import { CreateAjustesxserviciosxalumnoDto } from './dto/create-ajustesxserviciosxalumno.dto';
 import { Model } from 'mongoose';
 import { IAjustexServicioxAlumno } from './interfaces/ajustexservicioxalumno.interface';
 
 @Injectable()
-export class AjuestesxserviciosxalumnosService {
+export class AjustesxserviciosxalumnosService {
 
   constructor(@InjectModel('AjustesxServiciosxAlumnos') private readonly ajustesxServxAlumnoModel: Model<IAjustexServicioxAlumno>){
 
   }
-  async crearAjustexServxAlumno(createAjuestesxserviciosxalumnoDto: CreateAjuestesxserviciosxalumnoDto) {
+  async crearAjustexServxAlumno(createAjuestesxserviciosxalumnoDto: CreateAjustesxserviciosxalumnoDto) {
     return await this.ajustesxServxAlumnoModel.create(createAjuestesxserviciosxalumnoDto);
   }
 
@@ -23,7 +23,7 @@ export class AjuestesxserviciosxalumnosService {
     return `This action returns a #${id} ajuestesxserviciosxalumno`;
   }
 
-  update(id: number, updateAjuestesxserviciosxalumnoDto: CreateAjuestesxserviciosxalumnoDto) {
+  update(id: number, updateAjuestesxserviciosxalumnoDto: CreateAjustesxserviciosxalumnoDto) {
     return `This action updates a #${id} ajuestesxserviciosxalumno`;
   }
 

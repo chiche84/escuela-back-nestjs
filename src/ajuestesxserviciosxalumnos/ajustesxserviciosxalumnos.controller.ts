@@ -1,15 +1,15 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
-import { AjuestesxserviciosxalumnosService } from './ajuestesxserviciosxalumnos.service';
-import { CreateAjuestesxserviciosxalumnoDto } from './dto/create-ajuestesxserviciosxalumno.dto';
+import { AjustesxserviciosxalumnosService } from './ajustesxserviciosxalumnos.service';
+import { CreateAjustesxserviciosxalumnoDto } from './dto/create-ajustesxserviciosxalumno.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-@Controller('ajuestesxserviciosxalumnos')
-export class AjuestesxserviciosxalumnosController {
-  constructor(private readonly ajuestesxserviciosxalumnosService: AjuestesxserviciosxalumnosService) {}
+@Controller('ajustesxserviciosxalumnos')
+export class AjustesxserviciosxalumnosController {
+  constructor(private readonly ajuestesxserviciosxalumnosService: AjustesxserviciosxalumnosService) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createAjuestesxserviciosxalumnoDto: CreateAjuestesxserviciosxalumnoDto) {
+  async create(@Body() createAjuestesxserviciosxalumnoDto: CreateAjustesxserviciosxalumnoDto) {
     try {
       const ajustexservxalumno = await this.ajuestesxserviciosxalumnosService.crearAjustexServxAlumno(createAjuestesxserviciosxalumnoDto);
       return {
@@ -31,18 +31,18 @@ export class AjuestesxserviciosxalumnosController {
   @Get()
   async ver() {
     try {
-      const ajustexservxalumno = await this.ajuestesxserviciosxalumnosService.verAjustesxServxAlumnos();
+      const ajustesxservxalumno = await this.ajuestesxserviciosxalumnosService.verAjustesxServxAlumnos();
       
       return {
         ok: true,
         msj:"Lista de Ajustes x Servicio x Alumno",
-        ajustexservxalumno
+        ajustesxservxalumno
       }
     } catch (error) {
         throw new HttpException({ 
           ok: false,
           msj: error,
-          ajustexservxalumno: null
+          ajustesxservxalumno: null
         },HttpStatus.INTERNAL_SERVER_ERROR);
     }    
   }
@@ -53,7 +53,7 @@ export class AjuestesxserviciosxalumnosController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAjuestesxserviciosxalumnoDto: CreateAjuestesxserviciosxalumnoDto) {
+  update(@Param('id') id: string, @Body() updateAjuestesxserviciosxalumnoDto: CreateAjustesxserviciosxalumnoDto) {
     return this.ajuestesxserviciosxalumnosService.update(+id, updateAjuestesxserviciosxalumnoDto);
   }
 

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AjuestesxserviciosxalumnosService } from './ajuestesxserviciosxalumnos.service';
-import { AjuestesxserviciosxalumnosController } from './ajuestesxserviciosxalumnos.controller';
+import { AjustesxserviciosxalumnosService } from './ajustesxserviciosxalumnos.service';
+import { AjustesxserviciosxalumnosController } from './ajustesxserviciosxalumnos.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AjustesxServiciosxAlumnosSchema } from './schemas/ajustesxserviciosxalumnos.schema';
 
@@ -8,7 +8,7 @@ import { AjustesxServiciosxAlumnosSchema } from './schemas/ajustesxserviciosxalu
   imports: [
     MongooseModule.forFeature([{name: 'AjustesxServiciosxAlumnos', schema: AjustesxServiciosxAlumnosSchema}], 'ConexionEscuelaDeDanza' ),
   ],
-  controllers: [AjuestesxserviciosxalumnosController],
-  providers: [AjuestesxserviciosxalumnosService]
+  controllers: [AjustesxserviciosxalumnosController],
+  providers: [AjustesxserviciosxalumnosService]
 })
-export class AjuestesxserviciosxalumnosModule {}
+export class AjustesxserviciosxalumnosModule {}
