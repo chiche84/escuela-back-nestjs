@@ -9,9 +9,9 @@ export class AjustesxserviciosxalumnosController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createAjuestesxserviciosxalumnoDto: CreateAjustesxserviciosxalumnoDto) {
+  async create(@Body() createAjustesxserviciosxalumnoDto: CreateAjustesxserviciosxalumnoDto) {
     try {
-      const ajustexservxalumno = await this.ajuestesxserviciosxalumnosService.crearAjustexServxAlumno(createAjuestesxserviciosxalumnoDto);
+      const ajustexservxalumno = await this.ajuestesxserviciosxalumnosService.crearAjustexServxAlumno(createAjustesxserviciosxalumnoDto);
       return {
         ok: true,
         msj: "Se creo el ajuste x servicio x alumno",

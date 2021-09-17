@@ -10,8 +10,9 @@ export class AjustesxserviciosxalumnosService {
   constructor(@InjectModel('AjustesxServiciosxAlumnos') private readonly ajustesxServxAlumnoModel: Model<IAjustexServicioxAlumno>){
 
   }
-  async crearAjustexServxAlumno(createAjuestesxserviciosxalumnoDto: CreateAjustesxserviciosxalumnoDto) {
-    return await this.ajustesxServxAlumnoModel.create(createAjuestesxserviciosxalumnoDto);
+  async crearAjustexServxAlumno(createAjustesxserviciosxalumnoDto: CreateAjustesxserviciosxalumnoDto) {
+
+    return await this.ajustesxServxAlumnoModel.create(createAjustesxserviciosxalumnoDto);
   }
 
   async verAjustesxServxAlumnos() {
