@@ -17,12 +17,20 @@ export class AjustesxserviciosxalumnosService {
   }
 
   async verAjustesxServxAlumnos() {
-    return await this.ajustesxServxAlumnoModel.find({ estaActivo: true}).populate({ path: 'idAjuste', select: 'descripcion'})
+    return await this.ajustesxServxAlumnoModel.find({ estaActivo: true}).populate({ path: 'idAjustes', select: 'descripcion'})
                                                                         .populate({path: 'idAlumnoxServicio', select: 'idAlumno idServicio'});
   }
 
   listarAjustesxServxAlumnos(): Observable<IAjustexServicioxAlumno[]>{
-    return from(this.ajustesxServxAlumnoModel.find({ estaActivo: true}).populate({ path: 'idAjuste', select: 'descripcion'}).populate({path: 'idAlumnoxServicio', select: 'idAlumno idServicio'}))
+    return from(this.ajustesxServxAlumnoModel.find({ estaActivo: true})
+            .populate({ 
+                      path: 'idAjustes', 
+                      select: 'descripcion fechaDesdeValidez fechaHastaValidez',
+                      match: { descripcion: { $eq:'Ajuste 2' } }
+                    })
+            .populate({path: 'idAlumnoxServicio', populate: { path: 'idServicio', select:'tipoGeneracion' }})
+            .populate({path: 'idAlumnoxServicio', populate: { path: 'idAlumno', select:'fechaNacimiento nombre' }}))
+                                                                        
                 .pipe(
                   map(resp=> resp as IAjustexServicioxAlumno[])
                 );

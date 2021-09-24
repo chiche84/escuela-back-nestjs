@@ -1,12 +1,18 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
+import { TareasService } from './tareas.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService,
+              private readonly tareaServicio: TareasService) {}
 
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+  @Get('tareas')
+  getTareas(){
+    this.tareaServicio.generarOP();
   }
 }

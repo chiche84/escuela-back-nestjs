@@ -1,4 +1,4 @@
 export class CreateAjustesxserviciosxalumnoDto {
-    idAlumnoxServicio: string;
-    idAjuste?: string[];
+    // idAlumnoxServicio: string;
+    // idAjustes?: string[];
 }

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Model } from 'mongoose';
-import { tap } from 'rxjs';
+import { tap, map, from } from 'rxjs';
 import { IAjustexServicioxAlumno } from './ajuestesxserviciosxalumnos/interfaces/ajustexservicioxalumno.interface';
 import { IServicio } from './servicios/interfaces/servicio.interface';
 import { ServiciosService } from './servicios/servicios.service';
@@ -15,7 +13,7 @@ constructor(private readonly servicioServicio: ServiciosService,
 
 }
     //@Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_NOON)
-    @Cron(CronExpression.EVERY_30_SECONDS)
+    //@Cron(CronExpression.EVERY_30_SECONDS)
     async generarOP() {
         //RECORRER AjustesxServiciosxAlumnos
         //encuentro un registro, me fijo el servicio, me fijo q ajustes lo afectan...
@@ -29,25 +27,13 @@ constructor(private readonly servicioServicio: ServiciosService,
         //*Cantidad de veces que se aplica (1 vez o cada vez que se paga)
         //*Cuando se genera ese servicio o no
         
+              
+       
+
         const observProceso$ = this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnos().pipe(
-            tap(resp=> {
-                resp.forEach((element: any) => {
-                    let servicio = this.servicioServicio.servicioById(element.idAlumnoxServicio.idServicio).pipe(
-                        tap(resp=> {
-                            console.log(resp);
-                            if (element.idAjuste.length > 0) {
-                                element.idAjuste.forEach((ajuste: any) => {
-                                    console.log(element.idAlumnoxServicio + '- Ajusteee:' + ajuste.modoAplicacion);
-                                });
-                            }
-                        })
-                    );
-                    servicio.subscribe();                    
-                })
-            })
-        );
+            map(resp => from(resp).forEach(console.log))
+        )
 
         observProceso$.subscribe();
-    
     }
 }
