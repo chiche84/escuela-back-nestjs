@@ -11,6 +11,12 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { AuthModule } from './auth/auth.module';
 import { AlumnosxserviciosModule } from './alumnosxservicios/alumnosxservicios.module';
 import { AjustesxserviciosxalumnosModule } from './ajuestesxserviciosxalumnos/ajustesxserviciosxalumnos.module';
+import { AjustesxServiciosxAlumnosSchema } from './ajuestesxserviciosxalumnos/schemas/ajustesxserviciosxalumnos.schema';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TareasService } from './tareas.service';
+import { ServicioSchema } from './servicios/schemas/servicio.schema';
+import { ServiciosService } from './servicios/servicios.service';
+import { AjustesxserviciosxalumnosService } from './ajuestesxserviciosxalumnos/ajustesxserviciosxalumnos.service';
 
 @Module({
   imports: [ 
@@ -27,13 +33,25 @@ import { AjustesxserviciosxalumnosModule } from './ajuestesxserviciosxalumnos/aj
         useFindAndModify: false,        
     }),      
     RefBarriosModule, 
-    ServiciosModule, UsuariosModule, AlumnosxserviciosModule, AjustesxserviciosxalumnosModule, 
+    ServiciosModule, 
+    UsuariosModule, 
+    AlumnosxserviciosModule, 
+    AjustesxserviciosxalumnosModule, 
+    MongooseModule.forFeature([
+      {name: 'AjustesxServiciosxAlumnos', schema: AjustesxServiciosxAlumnosSchema}, 
+      {name: 'Servicios', schema: ServicioSchema}
+      ], 
+      'ConexionEscuelaDeDanza' ),
+    ScheduleModule.forRoot()
   ],
   controllers: [
     AppController
   ],
   providers: [
-    AppService
+    AppService,
+    TareasService,
+    ServiciosService,
+    AjustesxserviciosxalumnosService
   ],
 })
 export class AppModule {

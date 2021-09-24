@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { IServicio } from './interfaces/servicio.interface';
 import { IAjuste } from '../ajustes/interfaces/ajuste.interface';
 import { IAlumnoxServicio } from '../alumnosxservicios/interfaces/alumnosxservicios.interface';
+import { from, Observable } from 'rxjs';
 
 @Injectable()
 export class ServiciosService {
@@ -23,8 +24,8 @@ export class ServiciosService {
     return await this.servicioModel.find({ estaActivo: true});
   }
 
-  async servicioById(id: string): Promise<IServicio> {
-    return await this.servicioModel.findById(id);
+  servicioById(id: string): Observable<IServicio> {
+    return from(this.servicioModel.findById(id));
   }
 
   async modificarServicio(id: string, updateServicioDto: CreateServicioDto): Promise<IServicio> {

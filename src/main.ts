@@ -2,8 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { v2 } from 'cloudinary';
-import * as schedule from 'node-schedule';
-
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -27,14 +25,6 @@ async function bootstrap() {
   
   console.log("Cloudinary OK"); 
   console.log('Servidor corriendo en puerto', process.env.PORT || 8000);
-  
-  //TODO: Para realizar tareas recurrentes:
-  // const rule = new schedule.RecurrenceRule();
-  // rule.second = 15;
-  // let i = 0;
-  // schedule.scheduleJob(rule, () => {
-  //   i++;
-  //   console.log('segundo 15... activate locoooo, vamos ' + i + ' minutos');
-  // });
+   
 }
 bootstrap();

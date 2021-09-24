@@ -13,6 +13,6 @@ import { AlumnosxserviciosModule } from '../alumnosxservicios/alumnosxservicios.
     AlumnosxserviciosModule
   ],
   controllers: [ServiciosController],
-  providers: [ServiciosService]
+  providers: [ServiciosService],
 })
 export class ServiciosModule {}

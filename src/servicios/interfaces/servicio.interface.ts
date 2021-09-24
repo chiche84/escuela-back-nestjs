@@ -3,3 +3,10 @@ export interface IServicio extends Document {
     precio: number;
     tipoGeneracion: string;    
 }
+
+export enum ETiposGeneracion {
+    D = 'Diaria',
+    M = 'Mensual',
+    A = 'Anual',
+    O = 'Ocasional'
+}

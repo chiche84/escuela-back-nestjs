@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateAjustesxserviciosxalumnoDto } from './dto/create-ajustesxserviciosxalumno.dto';
 import { Model } from 'mongoose';
 import { IAjustexServicioxAlumno } from './interfaces/ajustexservicioxalumno.interface';
+import { from, Observable, map } from 'rxjs';
 
 @Injectable()
 export class AjustesxserviciosxalumnosService {
@@ -20,6 +21,12 @@ export class AjustesxserviciosxalumnosService {
                                                                         .populate({path: 'idAlumnoxServicio', select: 'idAlumno idServicio'});
   }
 
+  listarAjustesxServxAlumnos(): Observable<IAjustexServicioxAlumno[]>{
+    return from(this.ajustesxServxAlumnoModel.find({ estaActivo: true}).populate({ path: 'idAjuste', select: 'descripcion'}).populate({path: 'idAlumnoxServicio', select: 'idAlumno idServicio'}))
+                .pipe(
+                  map(resp=> resp as IAjustexServicioxAlumno[])
+                );
+  }
   findOne(id: number) {
     return `This action returns a #${id} ajuestesxserviciosxalumno`;
   }
