@@ -3,7 +3,7 @@ import { Schema } from "mongoose";
 export const AlumnoSchema = new Schema({    
     apellido: { type: String, require: true },
     nombre: { type: String, require: true },
-    fechaNacimiento: { type: String, require: true},
+    fechaNacimiento: { type: Date, require: true},
     dni: { type: Number, require: true, unique: false },
     fotoDniFrente: {type: String},
     fotoDniDorso: {type: String},

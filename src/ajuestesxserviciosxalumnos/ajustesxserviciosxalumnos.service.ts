@@ -21,12 +21,14 @@ export class AjustesxserviciosxalumnosService {
                                                                         .populate({path: 'idAlumnoxServicio', select: 'idAlumno idServicio'});
   }
 
-  listarAjustesxServxAlumnos(): Observable<IAjustexServicioxAlumno[]>{
+  listarAjustesxServxAlumnosByFecha(fechaActual: Date): Observable<IAjustexServicioxAlumno[]>{       
     return from(this.ajustesxServxAlumnoModel.find({ estaActivo: true})
             .populate({ 
                       path: 'idAjustes', 
-                      select: 'descripcion fechaDesdeValidez fechaHastaValidez',
-                      match: { descripcion: { $eq:'Ajuste 2' } }
+                      select: 'descripcion fechaDesdeValidez fechaHastaValidez',                      
+                      match: { fechaDesdeValidez: { $lte: fechaActual}, fechaHastaValidez: { $gte: fechaActual} }
+                      //fechaDesdeValidez <= fechaActual  match: { fechaDesdeValidez: { $lte: fechaActual}}
+                      //fechaHastaValidez >= fechaActual fechaHastaValidez: { $gte: fechaActual}
                     })
             .populate({path: 'idAlumnoxServicio', populate: { path: 'idServicio', select:'tipoGeneracion' }})
             .populate({path: 'idAlumnoxServicio', populate: { path: 'idAlumno', select:'fechaNacimiento nombre' }}))

@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { TareasService } from './tareas.service';
+import { map } from 'rxjs';
 
 @Controller()
 export class AppController {
@@ -12,7 +13,8 @@ export class AppController {
     return this.appService.getHello();
   }
   @Get('tareas')
-  getTareas(){
-    this.tareaServicio.generarOP();
+  async getTareas(){
+    const resultado = await this.tareaServicio.generarOP();  
+    return resultado;
   }
 }

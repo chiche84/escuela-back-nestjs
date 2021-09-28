@@ -4,8 +4,8 @@ export const AjusteSchema = new Schema({
     monto: { type: Number, require: true},
     esPorcentual: { type: Boolean, require: true, Default: true},
     modoAplicacion: { type: String, require: true },
-    fechaDesdeValidez: { type: String, require: true},
-    fechaHastaValidez: { type: String, require: true},
+    fechaDesdeValidez: { type: Date, require: true},
+    fechaHastaValidez: { type: Date, require: true},
     idServicioAfectado: { type: Schema.Types.ObjectId, ref: 'Servicios'},
     estaActivo: { type: Boolean, require: true, default: true }
 },
