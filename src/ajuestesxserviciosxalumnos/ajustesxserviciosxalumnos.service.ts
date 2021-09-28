@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreateAjustesxserviciosxalumnoDto } from './dto/create-ajustesxserviciosxalumno.dto';
 import { Model } from 'mongoose';
-import { IAjustexServicioxAlumno } from './interfaces/ajustexservicioxalumno.interface';
 import { from, Observable, map } from 'rxjs';
+import { CreateAjustesxserviciosxalumnoDto } from './dto/create-ajustesxserviciosxalumno.dto';
+import { IAjustexServicioxAlumno } from './interfaces/ajustexservicioxalumno.interface';
 
 @Injectable()
 export class AjustesxserviciosxalumnosService {

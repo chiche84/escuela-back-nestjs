@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AlumnosModule } from '../alumnos/alumnos.module';
+import { RefBarrioSchema } from './schemas/ref-barrio.schema';
 import { RefBarriosService } from './ref-barrios.service';
 import { RefBarriosController } from './ref-barrios.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { RefBarrioSchema } from './schemas/ref-barrio.schema';
-import { AlumnosModule } from '../alumnos/alumnos.module';
 
 @Module({
   imports:[

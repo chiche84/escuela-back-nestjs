@@ -1,10 +1,10 @@
 import { Controller, UsePipes, Body, Post, ValidationPipe, Req, Get, UseGuards, Res, HttpStatus } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SigninDto } from './dto/signin.dto';
-import { validarTokenDto } from './dto/validarToken.dto';
+import { Request, Response } from 'express';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { GoogleAuthGuard } from './google-auth.guard';
-import { Request, Response } from 'express';
+import { SigninDto } from './dto/signin.dto';
+import { validarTokenDto } from './dto/validarToken.dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {

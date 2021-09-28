@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
-import { RefBarriosService } from './ref-barrios.service';
-import { CreateRefBarrioDto } from './dto/create-ref-barrio.dto';
 import { map, Observable, catchError } from 'rxjs';
-import { IRefBarrio } from './interfaces/ref-barrio.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateRefBarrioDto } from './dto/create-ref-barrio.dto';
+import { RefBarriosService } from './ref-barrios.service';
+import { IRefBarrio } from './interfaces/ref-barrio.interface';
 
 @Controller('refbarrios')
 export class RefBarriosController {

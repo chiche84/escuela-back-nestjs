@@ -1,4 +1,4 @@
-import { PipeTransform, Injectable, ArgumentMetadata, ParseArrayPipe } from '@nestjs/common';
+import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
 
 @Injectable()
 export class ValidacionAlumnoFieldsPipe implements PipeTransform {

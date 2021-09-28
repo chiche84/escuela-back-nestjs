@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus } from '@nestjs/common';
-import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { UsuariosService } from './usuarios.service';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -14,13 +14,13 @@ export class UsuariosController {
       
      
       if (respuesta) {
-        return res.status(201).json({
+        return res.status(HttpStatus.CREATED).json({
             ok: true,
             msj: "Usuario creado",
             usuario: respuesta
         })          
       } else {
-        return res.status(500).json( {
+        return res.status(HttpStatus.PRECONDITION_FAILED).json( {
             ok: false,
             msj: 'Ya existe un usuario con ese email',
             usuario: null
@@ -29,7 +29,7 @@ export class UsuariosController {
       
       
       } catch (error) {
-          return res.status(500).json( {
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json( {
               ok: false,
               msj: error,
               usuario: null

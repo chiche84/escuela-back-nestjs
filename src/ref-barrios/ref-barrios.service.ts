@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { concat, concatMap, filter, from, map, mapTo, Observable, of, switchMap, take, takeUntil, tap } from 'rxjs';
+import { from, map, Observable} from 'rxjs';
 import { CreateRefBarrioDto } from './dto/create-ref-barrio.dto';
 import { IRefBarrio } from './interfaces/ref-barrio.interface';
 import { IAlumno } from '../alumnos/interfaces/alumno.interface';

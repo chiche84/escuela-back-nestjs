@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
-import { ServiciosService } from './servicios.service';
-import { CreateServicioDto } from './dto/create-servicio.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
 import { Response } from 'express';
-import { map, catchError, tap, filter } from 'rxjs';
+import { map, catchError } from 'rxjs';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateServicioDto } from './dto/create-servicio.dto';
+import { ServiciosService } from './servicios.service';
 
 @Controller('servicios')
 export class ServiciosController {

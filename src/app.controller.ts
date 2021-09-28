@@ -1,7 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { TareasService } from './tareas.service';
-import { map } from 'rxjs';
 
 @Controller()
 export class AppController {

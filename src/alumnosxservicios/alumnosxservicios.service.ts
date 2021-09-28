@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAlumnosxservicioDto } from './dto/create-alumnosxservicio.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CreateAlumnosxservicioDto } from './dto/create-alumnosxservicio.dto';
 import { IAlumnoxServicio } from './interfaces/alumnosxservicios.interface';
 
 @Injectable()

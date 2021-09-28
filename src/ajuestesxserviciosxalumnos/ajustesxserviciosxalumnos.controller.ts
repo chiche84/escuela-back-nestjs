@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, HttpException, HttpStatus } from '@nestjs/common';
-import { AjustesxserviciosxalumnosService } from './ajustesxserviciosxalumnos.service';
-import { CreateAjustesxserviciosxalumnoDto } from './dto/create-ajustesxserviciosxalumno.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CreateAjustesxserviciosxalumnoDto } from './dto/create-ajustesxserviciosxalumno.dto';
+import { AjustesxserviciosxalumnosService } from './ajustesxserviciosxalumnos.service';
 
 @Controller('ajustesxserviciosxalumnos')
 export class AjustesxserviciosxalumnosController {

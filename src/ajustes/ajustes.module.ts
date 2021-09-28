@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { AjustesService } from './ajustes.service';
-import { AjustesController } from './ajustes.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AjusteSchema } from './schemas/ajuste.schema';
+import { AjustesService } from './ajustes.service';
+import { AjustesController } from './ajustes.controller';
 
 @Module({
   imports: [

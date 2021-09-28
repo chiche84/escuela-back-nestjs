@@ -1,22 +1,26 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AlumnosModule } from './alumnos/alumnos.module';
 import { MongooseModule } from '@nestjs/mongoose';
-import { RefBarriosModule } from './ref-barrios/ref-barrios.module';
-import { ServiciosModule } from './servicios/servicios.module';
+import { ScheduleModule } from '@nestjs/schedule';
+
 import { AjustesModule } from './ajustes/ajustes.module';
-import { UsuariosModule } from './usuarios/usuarios.module';
-import { AuthModule } from './auth/auth.module';
+import { AlumnosModule } from './alumnos/alumnos.module';
 import { AlumnosxserviciosModule } from './alumnosxservicios/alumnosxservicios.module';
 import { AjustesxserviciosxalumnosModule } from './ajuestesxserviciosxalumnos/ajustesxserviciosxalumnos.module';
+import { AuthModule } from './auth/auth.module';
+import { RefBarriosModule } from './ref-barrios/ref-barrios.module';
+import { ServiciosModule } from './servicios/servicios.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+
 import { AjustesxServiciosxAlumnosSchema } from './ajuestesxserviciosxalumnos/schemas/ajustesxserviciosxalumnos.schema';
-import { ScheduleModule } from '@nestjs/schedule';
-import { TareasService } from './tareas.service';
 import { ServicioSchema } from './servicios/schemas/servicio.schema';
-import { ServiciosService } from './servicios/servicios.service';
+
 import { AjustesxserviciosxalumnosService } from './ajuestesxserviciosxalumnos/ajustesxserviciosxalumnos.service';
+import { AppService } from './app.service';
+import { ServiciosService } from './servicios/servicios.service';
+import { TareasService } from './tareas.service';
+
+import { AppController } from './app.controller';
 
 @Module({
   imports: [ 

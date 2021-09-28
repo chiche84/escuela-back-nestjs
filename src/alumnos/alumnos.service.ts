@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { IAlumno } from './interfaces/alumno.interface';
-import { CreateAlumnoDto } from './dto/create-alumno.dto';
+import { from, Observable } from 'rxjs';
 import { v2 } from "cloudinary";
-import { from, map, Observable } from 'rxjs';
+import { CreateAlumnoDto } from './dto/create-alumno.dto';
+import { IAlumno } from './interfaces/alumno.interface';
 
 @Injectable()
 export class AlumnosService {

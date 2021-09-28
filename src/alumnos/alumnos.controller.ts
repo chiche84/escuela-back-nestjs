@@ -1,16 +1,15 @@
 import { Controller, Post, Get, Param, Delete, Body, Req, Res, UseInterceptors, Query, UploadedFiles, HttpStatus, Put, UseGuards } from '@nestjs/common';
-import { CreateAlumnoDto } from './dto/create-alumno.dto';
-import { AlumnosService } from './alumnos.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { ValidacionAlumnoFieldsPipe } from './pipes/validacionesAlumnos.pipe';
+import { Response } from 'express';
+import { catchError, map, Observable } from 'rxjs';
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
-import { catchError, map, Observable } from 'rxjs';
-import { IAlumno } from './interfaces/alumno.interface';
-import { createReadStream } from 'fs';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { Response } from 'express';
+import { CreateAlumnoDto } from './dto/create-alumno.dto';
+import { ValidacionAlumnoFieldsPipe } from './pipes/validacionesAlumnos.pipe';
+import { AlumnosService } from './alumnos.service';
+import { IAlumno } from './interfaces/alumno.interface';
 
 @Controller('alumnos')
 export class AlumnosController {
