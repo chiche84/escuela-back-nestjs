@@ -1,3 +1,4 @@
+import { VistaServiciosAjustes } from './../tareas.service';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -21,22 +22,31 @@ export class AjustesxserviciosxalumnosService {
                                                                         .populate({path: 'idAlumnoxServicio', select: 'idAlumno idServicio'});
   }
 
-  listarAjustesxServxAlumnosByFecha(fechaActual: Date): Observable<IAjustexServicioxAlumno[]>{       
+  listarAjustesxServxAlumnosByFecha(fechaActual: Date): Observable<VistaServiciosAjustes[]>{       
     return from(this.ajustesxServxAlumnoModel.find({ estaActivo: true})
             .populate({ 
                       path: 'idAjustes', 
                       select: 'descripcion fechaDesdeValidez fechaHastaValidez',                      
-                      match: { fechaDesdeValidez: { $lte: fechaActual}, fechaHastaValidez: { $gte: fechaActual} }
+                      match: { fechaDesdeValidez: { $lte: fechaActual}, fechaHastaValidez: { $gte: fechaActual}, estaActivo: { $eq: true} }
                       //fechaDesdeValidez <= fechaActual  match: { fechaDesdeValidez: { $lte: fechaActual}}
                       //fechaHastaValidez >= fechaActual fechaHastaValidez: { $gte: fechaActual}
                     })
-            .populate({path: 'idAlumnoxServicio', populate: { path: 'idServicio', select:'tipoGeneracion' }})
-            .populate({path: 'idAlumnoxServicio', populate: { path: 'idAlumno', select:'fechaNacimiento nombre' }}))
-                                                                        
+            .populate({
+                      path: 'idAlumnoxServicio', populate:  { 
+                                                            path: 'idServicio', select:'tipoGeneracion precio',
+                                                            match: { estaActivo: { $eq: true} }
+                                                            }
+                      })
+            .populate({path: 'idAlumnoxServicio', populate: { 
+                                                            path: 'idAlumno', select:'fechaNacimiento nombre',
+                                                            match: { estaActivo: { $eq: true} } 
+                                                            }
+                      }))                                                                        
                 .pipe(
-                  map(resp=> resp as IAjustexServicioxAlumno[])
+                  map(resp=> resp as any[])
                 );
   }
+
   findOne(id: number) {
     return `This action returns a #${id} ajuestesxserviciosxalumno`;
   }

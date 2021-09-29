@@ -5,8 +5,8 @@ export interface IServicio extends Document {
 }
 
 export enum ETiposGeneracion {
-    D = 'Diaria',
-    M = 'Mensual',
-    A = 'Anual',
-    O = 'Ocasional'
+    Diaria = 'Diaria',
+    Mensual = 'Mensual',
+    Anual = 'Anual',
+    Ocasional = 'Ocasional'
 }

@@ -2,14 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { tap, map, from, Observable } from 'rxjs';
 import { IAjustexServicioxAlumno } from './ajuestesxserviciosxalumnos/interfaces/ajustexservicioxalumno.interface';
-import { IServicio } from './servicios/interfaces/servicio.interface';
+import { IServicio, ETiposGeneracion } from './servicios/interfaces/servicio.interface';
 import { ServiciosService } from './servicios/servicios.service';
 import { AjustesxserviciosxalumnosService } from './ajuestesxserviciosxalumnos/ajustesxserviciosxalumnos.service';
+import { OpService } from './op/op.service';
 
 @Injectable()
 export class TareasService {
 constructor(private readonly servicioServicio: ServiciosService,
-            private readonly ajustesxserviciosxalumnosServicio: AjustesxserviciosxalumnosService){
+            private readonly ajustesxserviciosxalumnosServicio: AjustesxserviciosxalumnosService,
+            private readonly opServicio: OpService){
 
 }
     //@Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_NOON)
@@ -29,12 +31,31 @@ constructor(private readonly servicioServicio: ServiciosService,
         
               let total = 0;
         const fechaActual: Date =  new Date(Date.now());
+        let arrayAjustes: string[] = [];
         const observProceso$ = this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFecha(fechaActual).pipe(
-            map(resp => from(resp).forEach((value:any) => {
+            map(resp => from(resp).forEach((value:VistaServiciosAjustes) => {
                 total++;
-                if (value.idAjustes.length > 0) {
-                    
+                arrayAjustes = [];
+                if (value.idAjustes.length > 0) {                    
                     console.log('observable '+total +'--> ', value);
+
+                    value.idAjustes.forEach(a=>  arrayAjustes.push(a._id));
+
+                    switch ( value.idAlumnoxServicio.idServicio.tipoGeneracion) {
+                        case ETiposGeneracion.Mensual:
+                            //TODO:Controlo que no se haya generado en el mes actual
+                            
+                            this.opServicio.crearOp({   descripcion: 'iteracion ' + total, 
+                                                        monto: value.idAlumnoxServicio.idServicio.precio, 
+                                                        saldo: value.idAlumnoxServicio.idServicio.precio, 
+                                                        fechaGeneracion: fechaActual,
+                                                        idAlumnoxServicioGen: value.idAlumnoxServicio._id,
+                                                        idAjustesAplicados: arrayAjustes })
+                            
+                            break;
+                        case ETiposGeneracion.Diaria:
+                            break;
+                    }
                 }
                 else{
                     console.info('no tiene ajustes');
@@ -48,4 +69,41 @@ constructor(private readonly servicioServicio: ServiciosService,
        
         
     }
+}
+
+export interface VistaServiciosAjustes {
+    idAjustes?:         IDAjuste[];
+    estaActivo?:        string;
+    _id?:               string;
+    idAlumnoxServicio?: IDAlumnoxServicio;
+    createdAt?:         Date;
+    updatedAt?:         Date;
+}
+
+export interface IDAjuste {
+    _id?:               string;
+    descripcion?:       string;
+    fechaDesdeValidez?: Date;
+    fechaHastaValidez?: Date;
+}
+
+export interface IDAlumnoxServicio {
+    estaActivo?: string;
+    _id?:        string;
+    idAlumno?:   IDAlumno;
+    idServicio?: IDServicio;
+    createdAt?:  Date;
+    updatedAt?:  Date;
+}
+
+export interface IDAlumno {
+    _id?:             string;
+    nombre?:          string;
+    fechaNacimiento?: Date;
+}
+
+export interface IDServicio {
+    _id?:            string;
+    tipoGeneracion?: string;
+    precio?: number;
 }

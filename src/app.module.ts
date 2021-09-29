@@ -8,6 +8,7 @@ import { AlumnosModule } from './alumnos/alumnos.module';
 import { AlumnosxserviciosModule } from './alumnosxservicios/alumnosxservicios.module';
 import { AjustesxserviciosxalumnosModule } from './ajuestesxserviciosxalumnos/ajustesxserviciosxalumnos.module';
 import { AuthModule } from './auth/auth.module';
+import { OpModule } from './op/op.module';
 import { RefBarriosModule } from './ref-barrios/ref-barrios.module';
 import { ServiciosModule } from './servicios/servicios.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
@@ -21,6 +22,8 @@ import { ServiciosService } from './servicios/servicios.service';
 import { TareasService } from './tareas.service';
 
 import { AppController } from './app.controller';
+import { OpService } from './op/op.service';
+import { OpSchema } from './op/schemas/op.schema';
 
 @Module({
   imports: [ 
@@ -43,10 +46,12 @@ import { AppController } from './app.controller';
     AjustesxserviciosxalumnosModule, 
     MongooseModule.forFeature([
       {name: 'AjustesxServiciosxAlumnos', schema: AjustesxServiciosxAlumnosSchema}, 
-      {name: 'Servicios', schema: ServicioSchema}
+      {name: 'Servicios', schema: ServicioSchema},
+      {name: 'Ops', schema: OpSchema}
       ], 
       'ConexionEscuelaDeDanza' ),
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    OpModule
   ],
   controllers: [
     AppController
@@ -54,6 +59,7 @@ import { AppController } from './app.controller';
   providers: [
     AppService,
     TareasService,
+    OpService,
     ServiciosService,
     AjustesxserviciosxalumnosService
   ],
