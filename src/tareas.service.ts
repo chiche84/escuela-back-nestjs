@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { tap, map, from, Observable } from 'rxjs';
+import { tap, map, from, Observable, switchMap, filter } from 'rxjs';
 import { IAjustexServicioxAlumno } from './ajuestesxserviciosxalumnos/interfaces/ajustexservicioxalumno.interface';
 import { IServicio, ETiposGeneracion } from './servicios/interfaces/servicio.interface';
 import { ServiciosService } from './servicios/servicios.service';
@@ -29,23 +29,26 @@ constructor(private readonly servicioServicio: ServiciosService,
         //*Cantidad de veces que se aplica (1 vez o cada vez que se paga)
         //*Cuando se genera ese servicio o no
         
-              let total = 0;
+        let total = 0;
+        let totalInterno = 0;
         const fechaActual: Date =  new Date(Date.now());
         let arrayAjustes: string[] = [];
-        const observProceso$ = this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFecha(fechaActual).pipe(
-            map(resp => from(resp).forEach((value:VistaServiciosAjustes) => {
+
+        //**CON PROMESAS.. FUNCIONA SECUENCIAL... FALTA PROBAR CON LA VALIDACION QUE NO SE HAYA GENERADO EN EL MES ACTUAL (que tambien es asyncrona) */
+        const listaTotal = await this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFechaPromise(fechaActual).then(
+            x=> x.forEach((value:any)=> {
                 total++;
                 arrayAjustes = [];
                 if (value.idAjustes.length > 0) {                    
-                    console.log('observable '+total +'--> ', value);
+                    console.log('promesa '+total +'--> ', value);
 
-                    value.idAjustes.forEach(a=>  arrayAjustes.push(a._id));
-
+                    value.idAjustes.forEach((a:any)=>  arrayAjustes.push(a._id));
+                    totalInterno++;
                     switch ( value.idAlumnoxServicio.idServicio.tipoGeneracion) {
                         case ETiposGeneracion.Mensual:
                             //TODO:Controlo que no se haya generado en el mes actual
                             
-                            this.opServicio.crearOp({   descripcion: 'iteracion ' + total, 
+                            this.opServicio.crearOp({   descripcion: 'iteracion prom ' + total, 
                                                         monto: value.idAlumnoxServicio.idServicio.precio, 
                                                         saldo: value.idAlumnoxServicio.idServicio.precio, 
                                                         fechaGeneracion: fechaActual,
@@ -60,17 +63,55 @@ constructor(private readonly servicioServicio: ServiciosService,
                 else{
                     console.info('no tiene ajustes');
                 }
-            }))
-        )
-        observProceso$.subscribe();
-        
-        //return this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFecha(fechaActual);
+            })
+        );
+                
+       let servGenerados = 0;
 
-       
-        
-    }
-}
-
+        const observProceso$ = this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFecha(fechaActual).pipe(
+                map(resp => from(resp).forEach((value:VistaServiciosAjustes) => {
+                        total++;
+                        arrayAjustes = [];
+                        if (value.idAjustes.length > 0 && value.idAlumnoxServicio.idAlumno != null && value.idAlumnoxServicio.idServicio != null) {                    
+                                console.log('observable '+total +'--> ', value);
+                    
+                                value.idAjustes.forEach(a=>  arrayAjustes.push(a._id));
+                    
+                                switch ( value.idAlumnoxServicio.idServicio.tipoGeneracion) {
+                                        case ETiposGeneracion.Mensual:
+                                            //Controlo que no se haya generado en el mes actual
+                                            this.opServicio.buscarPorServicioAlumnoMes(value.idAlumnoxServicio.idAlumno._id, value.idAlumnoxServicio.idServicio._id, fechaActual)
+                                                            .then(x=> servGenerados = x.length)
+                                                            .catch(x=> {
+                                                                console.log('---------FALLO EN ' +x);
+                                                                servGenerados = 69;
+                                                            });
+                                            if (servGenerados === 0) {
+                                                this.opServicio.crearOPObser({   descripcion: 'iteracion obs ' + total, 
+                                                                            monto: value.idAlumnoxServicio.idServicio.precio, 
+                                                                            saldo: value.idAlumnoxServicio.idServicio.precio, 
+                                                                            fechaGeneracion: fechaActual,
+                                                                            idAlumnoxServicioGen: value.idAlumnoxServicio._id,
+                                                                            idAjustesAplicados: arrayAjustes }).subscribe() //funciona tambien si uso la promesa                                                
+                                            }
+                        
+                                            break;
+                                        case ETiposGeneracion.Diaria:
+                                            break;
+                                    }
+                        }
+                        else{
+                                console.info('no tiene ajustes, servicio o alumno');
+                            }
+                    }))
+                );                            
+                            
+                observProceso$.subscribe();
+                            
+                //return this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFecha(fechaActual);                            
+            }
+        }
+                    
 export interface VistaServiciosAjustes {
     idAjustes?:         IDAjuste[];
     estaActivo?:        string;

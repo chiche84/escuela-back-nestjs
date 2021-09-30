@@ -2,7 +2,7 @@ import { VistaServiciosAjustes } from './../tareas.service';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { from, Observable, map } from 'rxjs';
+import { from, Observable, map, of } from 'rxjs';
 import { CreateAjustesxserviciosxalumnoDto } from './dto/create-ajustesxserviciosxalumno.dto';
 import { IAjustexServicioxAlumno } from './interfaces/ajustexservicioxalumno.interface';
 
@@ -45,6 +45,28 @@ export class AjustesxserviciosxalumnosService {
                 .pipe(
                   map(resp=> resp as any[])
                 );
+  }
+
+  async listarAjustesxServxAlumnosByFechaPromise(fechaActual: Date) {       
+    return await this.ajustesxServxAlumnoModel.find({ estaActivo: true})
+            .populate({ 
+                      path: 'idAjustes', 
+                      select: 'descripcion fechaDesdeValidez fechaHastaValidez',                      
+                      match: { fechaDesdeValidez: { $lte: fechaActual}, fechaHastaValidez: { $gte: fechaActual}, estaActivo: { $eq: true} }
+                      //fechaDesdeValidez <= fechaActual  match: { fechaDesdeValidez: { $lte: fechaActual}}
+                      //fechaHastaValidez >= fechaActual fechaHastaValidez: { $gte: fechaActual}
+                    })
+            .populate({
+                      path: 'idAlumnoxServicio', populate:  { 
+                                                            path: 'idServicio', select:'tipoGeneracion precio',
+                                                            match: { estaActivo: { $eq: true} }
+                                                            }
+                      })
+            .populate({path: 'idAlumnoxServicio', populate: { 
+                                                            path: 'idAlumno', select:'fechaNacimiento nombre',
+                                                            match: { estaActivo: { $eq: true} } 
+                                                            }
+                      });
   }
 
   findOne(id: number) {
