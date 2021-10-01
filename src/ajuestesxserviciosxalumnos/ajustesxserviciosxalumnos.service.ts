@@ -35,12 +35,14 @@ export class AjustesxserviciosxalumnosService {
                       path: 'idAlumnoxServicio', populate:  { 
                                                             path: 'idServicio', select:'tipoGeneracion precio',
                                                             match: { estaActivo: { $eq: true} }
-                                                            }
+                                                            },
+                      match: { estaActivo: { $eq: true} }
                       })
             .populate({path: 'idAlumnoxServicio', populate: { 
                                                             path: 'idAlumno', select:'fechaNacimiento nombre',
                                                             match: { estaActivo: { $eq: true} } 
-                                                            }
+                                                            },
+                      match: { estaActivo: { $eq: true} }
                       }))                                                                        
                 .pipe(
                   map(resp=> resp as any[])

@@ -50,6 +50,8 @@ export class AlumnosService {
       async eliminarAlumno(id: string): Promise<any> {
           
         //TODO: controlo dependencias antes de eliminar
+        //PRECONDITIONS: Op todas pagadas
+        //POST CONDITIONS eliminar registros de idAlumnoxServicio (Para que no aparezca mas en la generacion automatica)
         const alumnoEliminado = await this.alumnoModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});
         if (alumnoEliminado) {
           return {

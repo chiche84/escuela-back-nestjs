@@ -35,10 +35,30 @@ export class OpService {
                                                                       path: 'idAlumno', select:'fechaNacimiento nombre',
                                                                       match: { estaActivo: { $eq: true}, _id: {$eq: idAlumno} } 
                                                                       }
-                                                          }).catch(x=> [] )
-                        
+                                                          }).catch(x=> [] )                        
   }
 
+  async buscarPorAlumnoxServicioMes(idAlumnoxServicio: string, fecha:Date ){
+    //si el servicio es mensual, al guardar debo registrar de que mes es.. para mayor presicion en la busqueda
+    //tengo dudas de la fecha de busqueda y su generacion porque no entiendo bien como funciona la hora UNIX
+    let miliseg = Date.parse(fecha.toString());
+    let fechaChe = new Date(miliseg)
+    console.info("fecha pasada: ",fechaChe);
+    
+    let y = fechaChe.getFullYear();    
+    let m = fechaChe.getMonth();
+    let primerDia = Date.parse(new Date(y, m, 1).toISOString());    
+    let ultimoDia = Date.parse(new Date(y, m + 1, 0).toISOString());
+    
+    let primerDia1 = new Date(primerDia);
+    let ultimoDia1 = new Date(ultimoDia);
+    console.log('primer1', primerDia1);    
+    console.log('ultimo1', ultimoDia1);
+    return await this.opsModel.find({ estaActivo:true, idAlumnoxServicioGen: { $eq: idAlumnoxServicio}, fechaGeneracion: { $gte: primerDia1 , $lte: ultimoDia1} }).select('fechaGeneracion')                                    
+                                    .catch(x=> [] )    
+
+                   
+  }
   findAll() {
     return `This action returns all op`;
   }

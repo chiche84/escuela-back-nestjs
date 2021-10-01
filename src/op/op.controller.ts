@@ -26,6 +26,15 @@ export class OpController {
     
   }
 
+  @Get('buscarPorAlumnoxServicioMes')
+  buscarPorAlumnoxServicioMes(@Body() body:any){
+    console.log(body);
+    let fecha : Date;
+    fecha = body.fecha;
+    let idAlumnoxServicio: string = body.idAlumnoxServicio;
+    return this.opService.buscarPorAlumnoxServicioMes(idAlumnoxServicio, fecha);
+  }
+
   @Get()
   findAll() {
     return this.opService.findAll();
