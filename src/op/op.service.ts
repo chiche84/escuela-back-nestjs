@@ -38,9 +38,7 @@ export class OpService {
                                                           }).catch(x=> [] )                        
   }
 
-  async buscarPorAlumnoxServicioMes(idAlumnoxServicio: string, fecha:Date ){
-    //si el servicio es mensual, al guardar debo registrar de que mes es.. para mayor presicion en la busqueda
-    //tengo dudas de la fecha de busqueda y su generacion porque no entiendo bien como funciona la hora UNIX
+  async buscarPorAlumnoxServicioMes(idAlumnoxServicio: string, fecha:Date ){    
     let miliseg = Date.parse(fecha.toString());
     let fechaChe = new Date(miliseg)
     console.info("fecha pasada: ",fechaChe);
@@ -48,7 +46,7 @@ export class OpService {
     let y = fechaChe.getFullYear();    
     let m = fechaChe.getMonth();
     let primerDia = Date.parse(new Date(y, m, 1).toISOString());    
-    let ultimoDia = Date.parse(new Date(y, m + 1, 0).toISOString());
+    let ultimoDia = Date.parse(new Date(y, m + 1, 0,23,59,59).toISOString());
     
     let primerDia1 = new Date(primerDia);
     let ultimoDia1 = new Date(ultimoDia);

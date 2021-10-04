@@ -1,22 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { tap, map, from, Observable, switchMap, filter } from 'rxjs';
-import { IAjustexServicioxAlumno } from './ajuestesxserviciosxalumnos/interfaces/ajustexservicioxalumno.interface';
 import { IServicio, ETiposGeneracion } from './servicios/interfaces/servicio.interface';
 import { ServiciosService } from './servicios/servicios.service';
-import { AjustesxserviciosxalumnosService } from './ajuestesxserviciosxalumnos/ajustesxserviciosxalumnos.service';
 import { OpService } from './op/op.service';
+import { AlumnosxServiciosService } from './alumnosxservicios/alumnosxservicios.service';
 
 @Injectable()
 export class TareasService {
-constructor(private readonly servicioServicio: ServiciosService,
-            private readonly ajustesxserviciosxalumnosServicio: AjustesxserviciosxalumnosService,
+constructor(private readonly AlumnosxserviciosServicio: AlumnosxServiciosService,
             private readonly opServicio: OpService){
 
 }
     //@Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_NOON)
-    //@Cron(CronExpression.EVERY_30_SECONDS)
-     async generarOP() {
+    async generarOP() {
         //RECORRER AjustesxServiciosxAlumnos
         //encuentro un registro, me fijo el servicio, me fijo q ajustes lo afectan...
         //FILTRAR Ajustes que tienen validez en el dia actual a generar LISTO 
@@ -35,82 +31,89 @@ constructor(private readonly servicioServicio: ServiciosService,
         const fechaActual: Date =  new Date(Date.now());
         let arrayAjustes: string[] = [];
 
-        //**CON PROMESAS.. FUNCIONA SECUENCIAL... FALTA PROBAR CON LA VALIDACION QUE NO SE HAYA GENERADO EN EL MES ACTUAL (que tambien es asyncrona) */
-        const listaTotal = await this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFechaPromise(fechaActual);
-        for (let index = 0; index < listaTotal.length; index++) {
-            const element = listaTotal[index] as any;
+        //**CON PROMESAS.. FUNCIONA SECUENCIAL... */
+        // const listaTotal = await this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFechaPromise(fechaActual);
+        // for (let index = 0; index < listaTotal.length; index++) {
+        //     const element = listaTotal[index] as any;
+        //         total++;
+        //         arrayAjustes = [];
+        //         if (element.idAjustes.length > 0) {                    
+        //             console.log('promesa '+total +'--> ', element);
+        //             totalInterno = 0;
+        //             for (let index = 0; index < element.idAjustes.length; index++) {
+        //                 const elementAjuste = element.idAjustes[index];                        
+        //                 arrayAjustes.push(elementAjuste._id)
+        //                 totalInterno++;
+        //                 switch ( element.idAlumnoxServicio.idServicio.tipoGeneracion) {
+        //                     case ETiposGeneracion.Mensual:                                
+        //                         servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(element.idAlumnoxServicio._id, fechaActual)).length;
+        //                         console.log('SERVICIOS GENERADOS- iteracion '+ total + ' -aju ' + totalInterno + ' -sg '+ servGenerados);
+        //                         if (servGenerados === 0)
+        //                         {
+
+        //                             await this.opServicio.crearOp({   descripcion: 'iteracion prom ' + total, 
+        //                                                                             monto: element.idAlumnoxServicio.idServicio.precio, 
+        //                                                                             saldo: element.idAlumnoxServicio.idServicio.precio, 
+        //                                                                             fechaGeneracion: fechaActual,
+        //                                                                             idAlumnoxServicioGen: element.idAlumnoxServicio._id,
+        //                                                                             idAjustesAplicados: arrayAjustes })
+        //                             console.log('Guardada OP iteracion iteracion '+ total + ' -aju' + totalInterno);
+        //                         }                                
+        //                         break;
+        //                     case ETiposGeneracion.Anual:
+        //                         break;
+        //                     case ETiposGeneracion.Diaria:                                
+        //                         break;
+        //                 }
+        //             }
+
+        //         }
+        //         else{
+        //             console.info('no tiene ajustes');
+        //         }   
+        // }
+        
+        const listaTotal1 = await this.AlumnosxserviciosServicio.listarServxAlumnosByFechaAjustePromise(fechaActual);
+        
+        for (let index = 0; index < listaTotal1.length; index++) {
+            const element = listaTotal1[index] as any;
                 total++;
                 arrayAjustes = [];
                 if (element.idAjustes.length > 0) {                    
                     console.log('promesa '+total +'--> ', element);
                     totalInterno = 0;
                     for (let index = 0; index < element.idAjustes.length; index++) {
-                        const elementAjuste = element.idAjustes[index];
-                        
+                        const elementAjuste = element.idAjustes[index];                        
                         arrayAjustes.push(elementAjuste._id)
                         totalInterno++;
-                        switch ( element.idAlumnoxServicio.idServicio.tipoGeneracion) {
-                            case ETiposGeneracion.Mensual:
-                                //TODO:Controlo que no se haya generado en el mes actual
-
-                                servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(element.idAlumnoxServicio._id, fechaActual)).length;
+                        switch ( element.idServicio.tipoGeneracion) {
+                            case ETiposGeneracion.Mensual:                                
+                                servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(element._id, fechaActual)).length;
                                 console.log('SERVICIOS GENERADOS- iteracion '+ total + ' -aju ' + totalInterno + ' -sg '+ servGenerados);
                                 if (servGenerados === 0)
                                 {
-
                                     await this.opServicio.crearOp({   descripcion: 'iteracion prom ' + total, 
-                                                                                    monto: element.idAlumnoxServicio.idServicio.precio, 
-                                                                                    saldo: element.idAlumnoxServicio.idServicio.precio, 
+                                                                                    monto: element.idServicio.precio, 
+                                                                                    saldo: element.idServicio.precio, 
                                                                                     fechaGeneracion: fechaActual,
-                                                                                    idAlumnoxServicioGen: element.idAlumnoxServicio._id,
+                                                                                    idAlumnoxServicioGen: element._id,
                                                                                     idAjustesAplicados: arrayAjustes })
                                     console.log('Guardada OP iteracion iteracion '+ total + ' -aju' + totalInterno);
-                                }
-
-                                
+                                }                                
                                 break;
-                            case ETiposGeneracion.Diaria:
+                            case ETiposGeneracion.Anual:
+                                break;
+                            case ETiposGeneracion.Diaria:                                
                                 break;
                         }
                     }
-
                 }
                 else{
                     console.info('no tiene ajustes');
                 }   
         }
-        
-        // .then(  x=> x.forEach((value:any)=> {
-        //         total++;
-        //         arrayAjustes = [];
-        //         if (value.idAjustes.length > 0) {                    
-        //             console.log('promesa '+total +'--> ', value);
-
-        //             value.idAjustes.forEach((a:any)=>  arrayAjustes.push(a._id));
-        //             totalInterno++;
-        //             switch ( value.idAlumnoxServicio.idServicio.tipoGeneracion) {
-        //                 case ETiposGeneracion.Mensual:
-        //                     //TODO:Controlo que no se haya generado en el mes actual
-                            
-        //                     this.opServicio.crearOp({   descripcion: 'iteracion prom ' + total, 
-        //                                                 monto: value.idAlumnoxServicio.idServicio.precio, 
-        //                                                 saldo: value.idAlumnoxServicio.idServicio.precio, 
-        //                                                 fechaGeneracion: fechaActual,
-        //                                                 idAlumnoxServicioGen: value.idAlumnoxServicio._id,
-        //                                                 idAjustesAplicados: arrayAjustes })
-                            
-        //                     break;
-        //                 case ETiposGeneracion.Diaria:
-        //                     break;
-        //             }
-        //         }
-        //         else{
-        //             console.info('no tiene ajustes');
-        //         }
-        //     })
-        // );
-                
-
+                       
+        //CON OBS NO FUNCIONA PORQUE NOSE COMO HACER PARA TRATAR LA RESP COMO OBS (from) y usar un await adentro (no se puede hacer eso)
         // const observProceso$ = this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFecha(fechaActual).pipe(
         //         map(resp => from(resp).forEach((value:VistaServiciosAjustes) => {
         //                 total++;
@@ -160,8 +163,8 @@ constructor(private readonly servicioServicio: ServiciosService,
         //         observProceso$.subscribe();
                             
                 //return this.ajustesxserviciosxalumnosServicio.listarAjustesxServxAlumnosByFecha(fechaActual);                            
-            }
         }
+}
                     
 export interface VistaServiciosAjustes {
     idAjustes?:         IDAjuste[];
