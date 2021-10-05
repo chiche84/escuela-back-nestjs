@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Res } from '@nestjs/common';
 import { OpService } from './op.service';
 import { CreateOpDto } from './dto/create-op.dto';
 import { UpdateOpDto } from './dto/update-op.dto';
+import { Response } from 'express';
 
 @Controller('op')
 export class OpController {
@@ -28,7 +29,6 @@ export class OpController {
 
   @Get('buscarPorAlumnoxServicioMes')
   buscarPorAlumnoxServicioMes(@Body() body:any){
-    console.log(body);
     let fecha : Date;
     fecha = body.fecha;
     let idAlumnoxServicio: string = body.idAlumnoxServicio;
@@ -40,9 +40,31 @@ export class OpController {
     return this.opService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.opService.findOne(+id);
+  @Get('poralumno/:idAlumno')
+  async buscarOPsPorAlumno(@Param('idAlumno') id: string, @Res() res: Response) {
+    
+    try {
+      const opsxAlumno = await this.opService.buscarPorAlumno(id);
+
+      if ( opsxAlumno.length == 0) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+            ok: true,
+            msj: "El alumno con el id " + id + ' no tiene Ops',
+            opsxAlumno: null
+        });
+    }
+    return res.status(HttpStatus.OK).json({
+        ok: true,
+        msj: "Alumno con Ops encontrado",
+        opsxAlumno
+    })
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        ok: false,
+        msj: error,
+        opsxAlumno: null
+      })
+    }    
   }
 
   @Patch(':id')

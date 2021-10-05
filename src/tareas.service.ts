@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { IServicio, ETiposGeneracion } from './servicios/interfaces/servicio.interface';
-import { ServiciosService } from './servicios/servicios.service';
-import { OpService } from './op/op.service';
-import { AlumnosxServiciosService } from './alumnosxservicios/alumnosxservicios.service';
+import { IServicio, ETiposGeneracion } from './modules/servicios/interfaces/servicio.interface';
+import { OpService } from './modules/op/op.service';
+import { AlumnosxServiciosService } from './modules/alumnosxservicios/alumnosxservicios.service';
 
 @Injectable()
 export class TareasService {

@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Res, HttpStatus, HttpException } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateAlumnosxservicioDto } from './dto/create-alumnosxservicio.dto';
 import { AlumnosxServiciosService } from './alumnosxservicios.service';
 
@@ -68,7 +68,36 @@ export class AlumnosxServiciosController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Res() res: Response) {
+  async buscarUno(@Param('id') id: string){
+      let alumnoxservicio = null;
+      try {
+        alumnoxservicio = await this.alumnosxserviciosService.alumnoxServicioById(id);
+        if (alumnoxservicio.length == 0) {
+          throw new Error(); 
+        }
+        return {
+          ok: true,
+          msj: "Alumno x Servicio encontrado",
+          servicio: alumnoxservicio
+        }
+      } catch (error) {
+        if (alumnoxservicio.length == 0) {
+          throw new HttpException({
+            ok: true,
+            msj: 'No existe el alumno x servicio con el id ' + id,
+            servicio: null
+          }, HttpStatus.NOT_FOUND)
+        }
+        throw new HttpException({
+          ok: false, 
+          msj: error,
+          servicio: null
+        }, HttpStatus.INTERNAL_SERVER_ERROR)
+      }
+  }
+
+  @Get('poralumno/:idAlumno')
+  async buscarPorAlumno(@Param('idAlumno') id: string, @Res() res: Response) {
     try {
       const alumnoxservicios = await this.alumnosxserviciosService.alumnoxServicioByIdAlumno(id);
 

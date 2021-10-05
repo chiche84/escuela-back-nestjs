@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
 import { Response } from 'express';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateAjusteDto } from './dto/create-ajuste.dto';
 import { AjustesService } from './ajustes.service';
 

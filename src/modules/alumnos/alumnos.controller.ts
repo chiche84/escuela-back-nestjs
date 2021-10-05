@@ -5,7 +5,7 @@ import { catchError, map, Observable } from 'rxjs';
 import { diskStorage } from 'multer';
 import path = require('path');
 import { v4 as uuidv4 } from 'uuid';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { ValidacionAlumnoFieldsPipe } from './pipes/validacionesAlumnos.pipe';
 import { AlumnosService } from './alumnos.service';

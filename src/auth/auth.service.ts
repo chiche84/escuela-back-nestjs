@@ -5,9 +5,9 @@ import { Model } from 'mongoose';
 import { compare } from 'bcryptjs';
 import { validarTokenDto } from './dto/validarToken.dto';
 import { SigninDto } from './dto/signin.dto';
-import { CreateUsuarioDto } from '../usuarios/dto/create-usuario.dto';
+import { CreateUsuarioDto } from '../modules/usuarios/dto/create-usuario.dto';
 import { IJwtPayload } from './jwt-payload.interface';
-import { IUsuario } from 'src/usuarios/interfaces/usuario.interface';
+import { IUsuario } from '../modules/usuarios/interfaces/usuario.interface';
 
 @Injectable()
 export class AuthService {

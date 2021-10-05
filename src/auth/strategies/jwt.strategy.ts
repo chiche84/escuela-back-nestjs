@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { IJwtPayload } from '../jwt-payload.interface';
-import { IUsuario } from '../../usuarios/interfaces/usuario.interface';
+import { IUsuario } from '../../modules/usuarios/interfaces/usuario.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

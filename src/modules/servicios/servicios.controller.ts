@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
 import { Response } from 'express';
 import { map, catchError } from 'rxjs';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateServicioDto } from './dto/create-servicio.dto';
 import { ServiciosService } from './servicios.service';
 
