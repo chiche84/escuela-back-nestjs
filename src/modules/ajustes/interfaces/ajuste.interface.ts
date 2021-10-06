@@ -10,8 +10,8 @@ export interface IAjuste extends Document {
 }
 
   export enum EModosAplicacion {
-      AlPagar = 'Cada vez que se paga el Servicio',
-      AlGenerar = 'Cada vez que se genera el Servicio ',
-      PorCantidad = 'Por cantidad de veces que se genera el Servicio',
-      PorFechas = 'Cada vez que se paga el Servicio y se controla la fecha de pago'
+      AlPagar = 'Al Pagar',
+      AlGenerar = 'Al Generarse el Servicio',
+      PorCantidad = 'Por Cantidad', //cant de veces que se genera el servicio
+      PorFechas = 'Al Pagar y controlar fechas'
   }

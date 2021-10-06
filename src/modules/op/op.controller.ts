@@ -32,13 +32,15 @@ export class OpController {
     let fecha : Date;
     fecha = body.fecha;
     let idAlumnoxServicio: string = body.idAlumnoxServicio;
-    return this.opService.buscarPorAlumnoxServicioMes(idAlumnoxServicio, fecha);
+    let idAjuste: string = body.idAjuste;
+    return this.opService.buscarPorAlumnoxServicioMes(idAlumnoxServicio, fecha, idAjuste);
   }
 
   @Get()
   findAll() {
     return this.opService.findAll();
   }
+  
 
   @Get('poralumno/:idAlumno')
   async buscarOPsPorAlumno(@Param('idAlumno') id: string, @Res() res: Response) {

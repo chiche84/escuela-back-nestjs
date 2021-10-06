@@ -19,26 +19,8 @@ export class OpService {
     return of(this.opsModel.create(createOpDto));
   }
 
-  async buscarPorServicioAlumnoMes(idAlumno: string, idServicio: string, fecha:Date ){
-   
-    let y = fecha.getFullYear(), m = fecha.getMonth();
-    let primerDia = new Date(y, m, 1);
-    let ultimoDia = new Date(y, m + 1, 0);
-
-    return await this.opsModel.find({ estaActivo:true, fechaGeneracion: { $gte: primerDia , $lte: ultimoDia} })
-                                                          .populate({ path: 'idAlumnoxServicio', populate:  { 
-                                                                      path: 'idServicio', select:'tipoGeneracion precio',
-                                                                      match: { estaActivo: { $eq: true}, _id: {$eq: idServicio} }
-                                                                    }
-                                                          })
-                                                          .populate({ path: 'idAlumnoxServicio', populate: { 
-                                                                      path: 'idAlumno', select:'fechaNacimiento nombre',
-                                                                      match: { estaActivo: { $eq: true}, _id: {$eq: idAlumno} } 
-                                                                      }
-                                                          }).catch(x=> [] )                        
-  }
-
-  async buscarPorAlumnoxServicioMes(idAlumnoxServicio: string, fecha:Date ){    
+ 
+  async buscarPorAlumnoxServicioMes(idAlumnoxServicio: string, fecha:Date, idAjuste: string ){    
     let miliseg = Date.parse(fecha.toString());
     let fechaChe = new Date(miliseg)
     
@@ -50,18 +32,26 @@ export class OpService {
     let ultimoDia1 = new Date(ultimoDia);
     return await this.opsModel.find({ estaActivo:true, 
                                       idAlumnoxServicioGen: { $eq: idAlumnoxServicio}, 
-                                      fechaGeneracion: { $gte: primerDia1 , $lte: ultimoDia1} }).select('fechaGeneracion')                                    
+                                      fechaGeneracion: { $gte: primerDia1 , $lte: ultimoDia1},
+                                      idAjustesAplicados: { $eq: idAjuste} 
+                                    })
+                              .populate({ path: 'idAjustesAplicados', select: 'descripcion modoAplicacion'})
+                                      //.select('fechaGeneracion')                                    
                   .catch(x=> [] )   
   }
 
   async buscarPorAlumno(idAlumno: string){
-    return await this.opsModel.find({ estaActivo: true })
-                          .populate({ path: 'idAlumnoxServicio', 
-                                      populate: { 
-                                        path: 'idAlumno', select:'fechaNacimiento nombre apellido',
-                                        match: { estaActivo: { $eq: true}, _id: {$eq: idAlumno} } 
-                                      }
-                          });
+    const resultado = await this.opsModel.find({ estaActivo: true})
+                          .populate({ path: 'idAlumnoxServicioGen',  
+                                      select:'idAlumno idServicio _id',
+                                      match: { estaActivo: { $eq: true}, idAlumno: {$eq: idAlumno} } ,
+                                      populate: [
+                                                  { path: 'idServicio', select: 'descripcion precio tipoGeneracion',  match: { estaActivo: { $eq: true}} }, 
+                                                  { path: 'idAlumno', select: 'apellido nombre',  match: { estaActivo: { $eq: true}} }
+                                                ] 
+                          })
+
+    return resultado.filter(x=> x.idAlumnoxServicioGen != null);        
   }
 
   findAll() {

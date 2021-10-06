@@ -5,8 +5,8 @@ export const OpSchema = new Schema({
     monto: { type: Number, require: true},
     fechaGeneracion: { type: Date, require: true},
     saldo: { type: Number, require: true},
-    idAlumnoxServicioGen: { type: Schema.Types.ObjectId, require: true},
-    idAjustesAplicados: [{ type: Schema.Types.ObjectId, require: true}],
+    idAlumnoxServicioGen: { type: Schema.Types.ObjectId,  ref: 'AlumnosxServicios', require: true},
+    idAjustesAplicados: [{ type: Schema.Types.ObjectId, ref: 'Ajustes', require: true}],
     estaActivo: { type: Boolean, require: true, default: true }    
 },
 {

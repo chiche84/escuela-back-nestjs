@@ -31,7 +31,7 @@ export class AlumnosxServiciosService {
     return await this.serviciosxAlumnoModel.find({estaActivo: true})
             .populate({
                       path: 'idAjustes', 
-                      select: 'descripcion fechaDesdeValidez fechaHastaValidez monto',                      
+                      select: 'descripcion fechaDesdeValidez fechaHastaValidez monto modoAplicacion',                      
                       match: { fechaDesdeValidez: { $lte: fechaActual}, fechaHastaValidez: { $gte: fechaActual}, estaActivo: { $eq: true} }
                       //fechaDesdeValidez <= fechaActual  match: { fechaDesdeValidez: { $lte: fechaActual}}
                       //fechaHastaValidez >= fechaActual fechaHastaValidez: { $gte: fechaActual}
