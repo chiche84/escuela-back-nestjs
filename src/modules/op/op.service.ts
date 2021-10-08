@@ -40,24 +40,44 @@ export class OpService {
                   .catch(x=> [] )   
   }
 
-  async buscarPorAlumno(idAlumno: string){
-    const resultado = await this.opsModel.find({ estaActivo: true})
-                          .populate({ path: 'idAlumnoxServicioGen',  
-                                      select:'idAlumno idServicio _id',
-                                      match: { estaActivo: { $eq: true}, idAlumno: {$eq: idAlumno} } ,
-                                      populate: [
-                                                  { path: 'idServicio', select: 'descripcion precio tipoGeneracion',  match: { estaActivo: { $eq: true}} }, 
-                                                  { path: 'idAlumno', select: 'apellido nombre',  match: { estaActivo: { $eq: true}} }
-                                                ] 
-                          })
-
-    return resultado.filter(x=> x.idAlumnoxServicioGen != null);        
-  }
-
-  findAll() {
-    return `This action returns all op`;
-  }
   
+  async buscarPorEstadoAlumno(estado?: 'impago' | 'pagado' | 'todos', idAlumno?: string){
+
+    let consulta = {}
+    if (idAlumno) {
+      consulta = { path: 'idAlumnoxServicioGen',  
+                          select:'idAlumno idServicio _id',
+                          match: { estaActivo: { $eq: true}, idAlumno: {$eq: idAlumno} },
+                          populate: [
+                                      { path: 'idServicio', select: 'descripcion precio tipoGeneracion',  match: { estaActivo: { $eq: true}} }, 
+                                      { path: 'idAlumno', select: 'apellido nombre',  match: { estaActivo: { $eq: true}} }
+                                    ] 
+                  }
+
+    }else{
+      consulta = { path: 'idAlumnoxServicioGen',  
+                          select:'idAlumno idServicio _id',
+                          match: { estaActivo: { $eq: true} },
+                          populate: [
+                                      { path: 'idServicio', select: 'descripcion precio tipoGeneracion',  match: { estaActivo: { $eq: true}} }, 
+                                      { path: 'idAlumno', select: 'apellido nombre',  match: { estaActivo: { $eq: true}} }
+                                    ] 
+                  }
+    }
+    const resultado = await this.opsModel.find({ estaActivo: true})
+                        .populate(consulta);
+    switch (estado) {
+      case 'impago':        
+        return resultado.filter(x => x.idAlumnoxServicioGen != null && x.saldo > 0);
+      case 'pagado':
+        return resultado.filter(x => x.idAlumnoxServicioGen != null && x.saldo === 0);
+      case 'todos':
+        return resultado.filter(x => x.idAlumnoxServicioGen != null);
+      default:
+        return resultado.filter(x => x.idAlumnoxServicioGen != null);
+    }
+  }
+    
   findOne(id: number) {
     return `This action returns a #${id} op`;
   }

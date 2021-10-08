@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Res, Query } from '@nestjs/common';
 import { OpService } from './op.service';
 import { CreateOpDto } from './dto/create-op.dto';
 import { UpdateOpDto } from './dto/update-op.dto';
@@ -28,46 +28,41 @@ export class OpController {
   }
 
   @Get('buscarPorAlumnoxServicioMes')
-  buscarPorAlumnoxServicioMes(@Body() body:any){
+  async buscarPorAlumnoxServicioMes(@Body() body:any){
     let fecha : Date;
     fecha = body.fecha;
     let idAlumnoxServicio: string = body.idAlumnoxServicio;
     let idAjuste: string = body.idAjuste;
-    return this.opService.buscarPorAlumnoxServicioMes(idAlumnoxServicio, fecha, idAjuste);
+    return await this.opService.buscarPorAlumnoxServicioMes(idAlumnoxServicio, fecha, idAjuste);
   }
 
-  @Get()
-  findAll() {
-    return this.opService.findAll();
-  }
-  
-
-  @Get('poralumno/:idAlumno')
-  async buscarOPsPorAlumno(@Param('idAlumno') id: string, @Res() res: Response) {
-    
+  @Get('buscarporestadoalumno')
+  async buscarPorEstadoAlumno(@Query('estado') estado: 'impago' | 'pagado' | 'todos', @Query('idAlumno') idAlumno: string, @Res() res: Response){
+        
     try {
-      const opsxAlumno = await this.opService.buscarPorAlumno(id);
+      const opsxEstadoAlumno = await this.opService.buscarPorEstadoAlumno(estado, idAlumno);
 
-      if ( opsxAlumno.length == 0) {
+      if (opsxEstadoAlumno.length == 0) {
         return res.status(HttpStatus.NOT_FOUND).json({
-            ok: true,
-            msj: "El alumno con el id " + id + ' no tiene Ops',
-            opsxAlumno: null
+          ok: true,
+          msj: "No se encontraron Ops en estado " + (estado ? 'impago' : 'pago'),
+          opsxEstadoAlumno: opsxEstadoAlumno
         });
-    }
-    return res.status(HttpStatus.OK).json({
+      }
+      return res.status(HttpStatus.OK).json({
         ok: true,
-        msj: "Alumno con Ops encontrado",
-        opsxAlumno
-    })
+        msj: "Ops Encontradas",
+        opsxEstadoAlumno: opsxEstadoAlumno
+      })
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         ok: false,
         msj: error,
-        opsxAlumno: null
+        opsxEstadoAlumno: null
       })
-    }    
+    }
   }
+   
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOpDto: UpdateOpDto) {
