@@ -23,8 +23,12 @@ export class AlumnosxServiciosService {
     return await this.serviciosxAlumnoModel.find({ _id: id});
   }
   async alumnoxServicioByIdAlumno(idAlumno: string): Promise<IAlumnoxServicio[]> {
-    return await this.serviciosxAlumnoModel.find({ estaActivo: true, idAlumno: idAlumno}).populate({path: 'idAlumno', select: 'apellido nombre'})
-                                                                                          .populate({path: 'idServicio', select: 'descripcion' });
+    
+    const resultado = await this.serviciosxAlumnoModel.find({ estaActivo: true, idAlumno: idAlumno}).populate({path: 'idAlumno', select: 'apellido nombre', match: { estaActivo: { $eq: true} }})
+                                                                                                    .populate({path: 'idServicio', select: 'descripcion', match: { estaActivo: { $eq: true} }})
+                                                                                                    .populate({path: 'idAjustes', select: 'descripcion', match: { estaActivo: { $eq: true} }});
+
+    return resultado.filter(x=> x.idAlumno != null && x.idServicio != null);
   }
 
   async listarServxAlumnosByFechaAjustePromise(fechaActual: Date) {
