@@ -22,6 +22,7 @@ import { AppController } from './app.controller';
 import { OpService } from './modules/op/op.service';
 import { OpSchema } from './modules/op/schemas/op.schema';
 import { AlumnosxServiciosService } from './modules/alumnosxservicios/alumnosxservicios.service';
+import { PagosModule } from './modules/pagos/pagos.module';
 
 @Module({
   imports: [ 
@@ -47,7 +48,8 @@ import { AlumnosxServiciosService } from './modules/alumnosxservicios/alumnosxse
       ], 
       'ConexionEscuelaDeDanza' ),
     ScheduleModule.forRoot(),
-    OpModule
+    OpModule,
+    PagosModule
   ],
   controllers: [
     AppController

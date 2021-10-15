@@ -65,7 +65,8 @@ export class OpService {
                   }
     }
     const resultado = await this.opsModel.find({ estaActivo: true})
-                        .populate(consulta);
+                        .populate(consulta)
+                        .populate({path: 'idAjustesAplicados', select: 'descripcion monto fechaDesdeValidez fechaHastaValidez modoAplicacion', match: { estaActivo: { $eq: true} }});
     switch (estado) {
       case 'impago':        
         return resultado.filter(x => x.idAlumnoxServicioGen != null && x.saldo > 0);

@@ -25,8 +25,8 @@ export class AlumnosxServiciosService {
   async alumnoxServicioByIdAlumno(idAlumno: string): Promise<IAlumnoxServicio[]> {
     
     const resultado = await this.serviciosxAlumnoModel.find({ estaActivo: true, idAlumno: idAlumno}).populate({path: 'idAlumno', select: 'apellido nombre', match: { estaActivo: { $eq: true} }})
-                                                                                                    .populate({path: 'idServicio', select: 'descripcion', match: { estaActivo: { $eq: true} }})
-                                                                                                    .populate({path: 'idAjustes', select: 'descripcion', match: { estaActivo: { $eq: true} }});
+                                                                                                    .populate({path: 'idServicio', select: 'descripcion precio tipoGeneracion', match: { estaActivo: { $eq: true} }})
+                                                                                                    .populate({path: 'idAjustes', select: 'descripcion monto fechaDesdeValidez fechaHastaValidez modoAplicacion', match: { estaActivo: { $eq: true} }});
 
     return resultado.filter(x=> x.idAlumno != null && x.idServicio != null);
   }
