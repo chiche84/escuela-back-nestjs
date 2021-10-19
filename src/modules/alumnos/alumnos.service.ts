@@ -42,7 +42,10 @@ export class AlumnosService {
         //   }
         // ))
       }
-     
+      
+      async alumnosByIdBarrio(idBarrio: string): Promise<IAlumno[]>{
+        return await this.alumnoModel.find({ idRefBarrio: idBarrio, estaActivo: true }, 'apellido nombre email');
+      }
       async modificarAlumno(id: string, updateAlumnoDto: CreateAlumnoDto): Promise<IAlumno>{     
         return await this.alumnoModel.findByIdAndUpdate(id, updateAlumnoDto, {new: true});
       }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Res, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Res, Query, Put } from '@nestjs/common';
 import { OpService } from './op.service';
 import { CreateOpDto } from './dto/create-op.dto';
 import { UpdateOpDto } from './dto/update-op.dto';
@@ -64,9 +64,9 @@ export class OpController {
   }
    
 
-  @Patch(':id')
+  @Put(':id')
   update(@Param('id') id: string, @Body() updateOpDto: UpdateOpDto) {
-    return this.opService.update(+id, updateOpDto);
+    return this.opService.modificarOP(id, updateOpDto);
   }
 
   @Delete(':id')

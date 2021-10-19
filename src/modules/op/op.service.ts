@@ -5,6 +5,7 @@ import { UpdateOpDto } from './dto/update-op.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Iop } from './interfaces/op.interface';
+import * as mongoose from 'mongoose';
 
 @Injectable()
 export class OpService {
@@ -79,12 +80,12 @@ export class OpService {
     }
   }
     
-  findOne(id: number) {
-    return `This action returns a #${id} op`;
+  async opById(id: string) {
+    return await this.opsModel.findById(id);
   }
 
-  update(id: number, updateOpDto: UpdateOpDto) {
-    return `This action updates a #${id} op`;
+  async modificarOP(id: string, updateOpDto: UpdateOpDto, sesion: mongoose.ClientSession | null = null ) {
+    return (await this.opsModel.findByIdAndUpdate(id, updateOpDto, {new: true})).$session(sesion);    
   }
 
   remove(id: number) {

@@ -9,6 +9,9 @@ import { OpSchema } from './schemas/op.schema';
     MongooseModule.forFeature([{ name: 'Ops', schema: OpSchema }], 'ConexionEscuelaDeDanza' )
   ],
   controllers: [OpController],
-  providers: [OpService]
+  providers: [OpService],
+  exports:[
+    OpService
+  ]
 })
 export class OpModule {}

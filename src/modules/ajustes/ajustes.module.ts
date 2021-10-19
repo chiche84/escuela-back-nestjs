@@ -11,7 +11,7 @@ import { AjustesController } from './ajustes.controller';
   controllers: [AjustesController],
   providers: [AjustesService],
   exports: [
-    MongooseModule.forFeature([{name: 'Ajustes', schema: AjusteSchema}], 'ConexionEscuelaDeDanza')
+    AjustesService
   ]
 })
 export class AjustesModule {}

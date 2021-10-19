@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe, HttpException, HttpStatus, UseFilters } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, ValidationPipe, HttpException, HttpStatus, UseFilters, Res } from '@nestjs/common';
 import { PagosService } from './pagos.service';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { UpdatePagoDto } from './dto/update-pago.dto';
+import { Response } from 'express';
 
 @Controller('pagos')
 export class PagosController {
@@ -9,21 +10,28 @@ export class PagosController {
 
   @UsePipes(ValidationPipe)
   @Post()
-  async create(@Body() createPagoDto: CreatePagoDto) {
+  async create(@Body() createPagoDto: CreatePagoDto, @Res() res: Response) {
        try {
       const pago = await this.pagosService.create(createPagoDto); 
-      
-      return {
-        ok: true,
-        msj: 'Se creo el pago',
-        pago
+      if (pago) {
+        return res.status(HttpStatus.OK).json({
+          ok: true,
+          msj: 'Se creo el pago y actualizo la Op',
+          pago
+        })        
+      }else{
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          ok: false,
+          msj: "Transaccion cancelada",
+          pago
+        })
       }
     } catch (error) {
-      return new HttpException({
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         ok: false,
         msj: error,
         pago: null
-      }, HttpStatus.INTERNAL_SERVER_ERROR)
+      })
     }
   }
 

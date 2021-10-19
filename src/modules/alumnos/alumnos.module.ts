@@ -15,7 +15,7 @@ import { AlumnosController } from './alumnos.controller';
     AlumnosService,
   ],
   exports: [
-    MongooseModule.forFeature([{name: 'Alumnos', schema: AlumnoSchema}], 'ConexionEscuelaDeDanza' )  
+    AlumnosService    
   ]
 })
 export class AlumnosModule {}

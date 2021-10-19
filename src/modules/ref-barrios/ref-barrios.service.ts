@@ -5,12 +5,13 @@ import { from, map, Observable} from 'rxjs';
 import { CreateRefBarrioDto } from './dto/create-ref-barrio.dto';
 import { IRefBarrio } from './interfaces/ref-barrio.interface';
 import { IAlumno } from '../alumnos/interfaces/alumno.interface';
+import { AlumnosService } from '../alumnos/alumnos.service';
 
 
 @Injectable()
 export class RefBarriosService {
   constructor( @InjectModel('RefBarrios') private readonly refBarrioModel: Model<IRefBarrio>,
-              @InjectModel('Alumnos') private readonly alumnoModel: Model<IAlumno>){
+              private readonly alumnoServicio: AlumnosService){
   }
   
 
@@ -62,7 +63,8 @@ export class RefBarriosService {
   async eliminarBarrio(id: string): Promise<any> {
   
     //controlo dependencias antes de eliminar
-    const alumnos = await this.alumnoModel.find({ idRefBarrio: id, estaActivo: true }, 'apellido nombre email'); 
+    //const alumnos = await this.alumnoModel.find({ idRefBarrio: id, estaActivo: true }, 'apellido nombre email'); 
+      const alumnos = await this.alumnoServicio.alumnosByIdBarrio(id);
       if (alumnos.length > 0) {
           return {
               ok: false,

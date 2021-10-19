@@ -8,21 +8,22 @@ import { AlumnosModule } from './modules/alumnos/alumnos.module';
 import { AlumnosxServiciosModule } from './modules/alumnosxservicios/alumnosxservicios.module';
 import { AuthModule } from './auth/auth.module';
 import { OpModule } from './modules/op/op.module';
+import { PagosModule } from './modules/pagos/pagos.module';
 import { RefBarriosModule } from './modules/ref-barrios/ref-barrios.module';
 import { ServiciosModule } from './modules/servicios/servicios.module';
 import { UsuariosModule } from './modules/usuarios/usuarios.module';
 
+import { AlumnosxServiciosSchema } from './modules/alumnosxservicios/schemas/alumnoxservicio.schema';
+import { OpSchema } from './modules/op/schemas/op.schema';
 import { ServicioSchema } from './modules/servicios/schemas/servicio.schema';
 
+import { AlumnosxServiciosService } from './modules/alumnosxservicios/alumnosxservicios.service';
 import { AppService } from './app.service';
+import { OpService } from './modules/op/op.service';
 import { ServiciosService } from './modules/servicios/servicios.service';
 import { TareasService } from './tareas.service';
 
 import { AppController } from './app.controller';
-import { OpService } from './modules/op/op.service';
-import { OpSchema } from './modules/op/schemas/op.schema';
-import { AlumnosxServiciosService } from './modules/alumnosxservicios/alumnosxservicios.service';
-import { PagosModule } from './modules/pagos/pagos.module';
 
 @Module({
   imports: [ 
@@ -41,12 +42,13 @@ import { PagosModule } from './modules/pagos/pagos.module';
     RefBarriosModule, 
     ServiciosModule, 
     UsuariosModule, 
-    AlumnosxServiciosModule, 
+    AlumnosxServiciosModule,     
     MongooseModule.forFeature([ 
       {name: 'Servicios', schema: ServicioSchema},
-      {name: 'Ops', schema: OpSchema}
+      {name: 'Ops', schema: OpSchema},
+      { name: 'AlumnosxServicios', schema: AlumnosxServiciosSchema}
       ], 
-      'ConexionEscuelaDeDanza' ),
+      'ConexionEscuelaDeDanza' ), //uso esto para el tareas.service... ver de despues ponerlo en un modulo aparte...
     ScheduleModule.forRoot(),
     OpModule,
     PagosModule

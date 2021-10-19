@@ -20,8 +20,13 @@ export class AlumnosxServiciosService {
                                                                       .populate({path: 'idServicio', select: 'descripcion' });
   }
   async alumnoxServicioById(id: string): Promise<IAlumnoxServicio[]>{
-    return await this.serviciosxAlumnoModel.find({ _id: id});
+    return await this.serviciosxAlumnoModel.find({ _id: id, estaActivo: true}).populate({path: 'idAlumno', select: 'apellido nombre'}); ;
   }
+
+  async alumnoxServicioByIdServicio(idServicio: string): Promise<IAlumnoxServicio[]>{
+    return await this.serviciosxAlumnoModel.find({ idServicio: idServicio, estaActivo: true}).populate({path: 'idAlumno', select: 'apellido nombre'}); ;
+  }
+  
   async alumnoxServicioByIdAlumno(idAlumno: string): Promise<IAlumnoxServicio[]> {
     
     const resultado = await this.serviciosxAlumnoModel.find({ estaActivo: true, idAlumno: idAlumno}).populate({path: 'idAlumno', select: 'apellido nombre', match: { estaActivo: { $eq: true} }})

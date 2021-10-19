@@ -6,13 +6,15 @@ import { CreateServicioDto } from './dto/create-servicio.dto';
 import { IServicio } from './interfaces/servicio.interface';
 import { IAjuste } from '../ajustes/interfaces/ajuste.interface';
 import { IAlumnoxServicio } from '../alumnosxservicios/interfaces/alumnosxservicios.interface';
+import { AjustesService } from '../ajustes/ajustes.service';
+import { AlumnosxServiciosService } from '../alumnosxservicios/alumnosxservicios.service';
 
 @Injectable()
 export class ServiciosService {
 
   constructor(@InjectModel('Servicios') private readonly servicioModel: Model<IServicio>,
-              @InjectModel('Ajustes') private readonly ajusteModel: Model<IAjuste>,
-              @InjectModel('AlumnosxServicios') private readonly serviciosxAlumnoModel: Model<IAlumnoxServicio> ){
+              private readonly ajustesServicio: AjustesService,
+              private readonly alumnosxServiciosServicio: AlumnosxServiciosService){
 
   }
 
@@ -35,7 +37,8 @@ export class ServiciosService {
   async eliminarServicio(id: string): Promise<any> {
     //TODO: controlo dependencias antes de eliminar:   
     
-    const alumnosxservicio = await this.serviciosxAlumnoModel.find({ idServicio: id, estaActivo: true }, '').populate({path: 'idAlumno', select: 'apellido nombre'}); 
+    //const alumnosxservicio = await this.serviciosxAlumnoModel.find({ idServicio: id, estaActivo: true }, '').populate({path: 'idAlumno', select: 'apellido nombre'}); 
+    const alumnosxservicio = await this.alumnosxServiciosServicio.alumnoxServicioByIdServicio(id);
     if (alumnosxservicio.length > 0) {
         return {
             ok: false,
@@ -44,7 +47,8 @@ export class ServiciosService {
         };
     }
 
-    const ajustes =  await this.ajusteModel.find({ idServicioAfectado: id, estaActivo: true}, 'descripcion monto fechaDesdeValidez fechaHastaValidez');
+    //const ajustes =  await this.ajusteModel.find({ idServicioAfectado: id, estaActivo: true}, 'descripcion monto fechaDesdeValidez fechaHastaValidez');
+    const ajustes = await this.ajustesServicio.ajusteByIdServicioAfectado(id);
     if (ajustes.length > 0) {
       return {
         ok: false,

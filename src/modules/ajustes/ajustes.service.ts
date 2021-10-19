@@ -22,6 +22,10 @@ export class AjustesService {
     return await this.ajustesModel.findById(id).populate({ path:'idServicioAfectado', select: 'descripcion' });
   }
 
+  async ajusteByIdServicioAfectado(idServicioAfectado: string): Promise<IAjuste[]> {
+    return await this.ajustesModel.find({ idServicioAfectado: idServicioAfectado, estaActivo: true}).populate({ path:'idServicioAfectado', select: 'descripcion' });
+  }
+  
   async modificarAjuste(id: string, updateAjusteDto: CreateAjusteDto): Promise<IAjuste> {
     return await this.ajustesModel.findByIdAndUpdate(id, updateAjusteDto, {new: true});
   }
