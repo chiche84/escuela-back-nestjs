@@ -40,25 +40,25 @@ export class OpController {
   async buscarPorEstadoAlumno(@Query('estado') estado: 'impago' | 'pagado' | 'todos', @Query('idAlumno') idAlumno: string, @Res() res: Response){
         
     try {
-      const opsxEstadoAlumno = await this.opService.buscarPorEstadoAlumno(estado, idAlumno);
+      const ops = await this.opService.buscarPorEstadoAlumno(estado, idAlumno);
 
-      if (opsxEstadoAlumno.length == 0) {
+      if (ops.length == 0) {
         return res.status(HttpStatus.NO_CONTENT).json({
           ok: true,
           msj: "No se encontraron Ops en estado " + (estado ? 'impago' : 'pago'),
-          opsxEstadoAlumno: opsxEstadoAlumno
+          ops: ops
         });
       }
       return res.status(HttpStatus.OK).json({
         ok: true,
-        msj: "Ops Encontradas",
-        opsxEstadoAlumno: opsxEstadoAlumno
+        msj: "Ops x Estado" + estado + " del alumno " + idAlumno + "Encontradas ",
+        ops: ops
       })
     } catch (error) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         ok: false,
         msj: error,
-        opsxEstadoAlumno: null
+        ops: null
       })
     }
   }
