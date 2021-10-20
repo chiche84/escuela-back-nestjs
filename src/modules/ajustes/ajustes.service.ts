@@ -18,6 +18,10 @@ export class AjustesService {
     return await this.ajustesModel.find({ estaActivo: true}).populate({ path:'idServicioAfectado', select: 'descripcion' });
   }
 
+  async verListaAjustes(ids: string[]): Promise<IAjuste[]>{
+    return await this.ajustesModel.find({ _id: {$in: ids}, estaActivo: true})
+  }
+
   async ajusteById(id: string): Promise<IAjuste> {
     return await this.ajustesModel.findById(id).populate({ path:'idServicioAfectado', select: 'descripcion' });
   }

@@ -102,7 +102,7 @@ export class AlumnosxServiciosController {
       const alumnoxservicios = await this.alumnosxserviciosService.alumnoxServicioByIdAlumno(id);
 
       if ( alumnoxservicios.length == 0) {
-        return res.status(HttpStatus.NOT_FOUND).json({
+        return res.status(HttpStatus.OK).json({
             ok: true,
             msj: "El alumno con el id " + id + ' no tiene servicios',
             alumnoxservicios: null

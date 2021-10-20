@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateAjusteDto } from './dto/create-ajuste.dto';
 import { AjustesService } from './ajustes.service';
+import { AjustesIdsPipe } from './pipes/ajustesids.pipe';
 
 @Controller('ajustes')
 export class AjustesController {
@@ -28,6 +29,32 @@ export class AjustesController {
     }    
   }   
 
+  @UseGuards(JwtAuthGuard)
+  @Get('lista')
+  async verListaAjustes(@Query('ids', new AjustesIdsPipe()) listaIds, @Res() res: Response) {
+    console.log(listaIds);
+    try {
+      const ajustes = await this.ajustesService.verListaAjustes(listaIds);
+      if (! ajustes) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+            ok: true,
+            msj: "No existen los ajustes buscados",
+            ajustes: null
+        });
+    }
+    return res.status(HttpStatus.OK).json({
+        ok: true,
+        msj: "Ajustes encontrados",
+        ajustes
+    })
+    } catch (error) {
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        ok: false,
+        msj: error,
+        ajustes: null
+      })
+    }    
+  }   
   @UseGuards(JwtAuthGuard)
   @Get()
   async ver() {

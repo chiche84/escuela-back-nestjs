@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Res, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Res, Query, Put, NotFoundException } from '@nestjs/common';
 import { OpService } from './op.service';
 import { CreateOpDto } from './dto/create-op.dto';
 import { UpdateOpDto } from './dto/update-op.dto';
@@ -43,7 +43,7 @@ export class OpController {
       const opsxEstadoAlumno = await this.opService.buscarPorEstadoAlumno(estado, idAlumno);
 
       if (opsxEstadoAlumno.length == 0) {
-        return res.status(HttpStatus.NOT_FOUND).json({
+        return res.status(HttpStatus.NO_CONTENT).json({
           ok: true,
           msj: "No se encontraron Ops en estado " + (estado ? 'impago' : 'pago'),
           opsxEstadoAlumno: opsxEstadoAlumno
