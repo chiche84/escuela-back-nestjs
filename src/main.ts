@@ -44,7 +44,7 @@ async function bootstrap() {
     })
 
     cliente.on('ready', () => {
-        console.log("Cliente listo");
+        console.log("Cliente listoOOO");
         //spinner.stop();
         escucharMsj();
         //cliente.sendMessage('5493884719054@c.us', 'bot dice: que yo te amo');
