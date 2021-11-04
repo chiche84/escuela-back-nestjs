@@ -35,48 +35,48 @@ async function bootstrap() {
   console.log('Servidor corriendo en puerto', process.env.PORT || 8000);
 
   
-  // if (fs.existsSync(SESSION_FILE_PATH)) {
+  if (fs.existsSync(SESSION_FILE_PATH)) {
 
-  //   sessionData = require('.'+SESSION_FILE_PATH);    
+    sessionData = require('.'+SESSION_FILE_PATH);    
     
-  //   cliente = new Client({
-  //       session: sessionData
-  //   })
+    cliente = new Client({
+        session: sessionData
+    })
 
-  //   cliente.on('ready', () => {
-  //       console.log("Cliente listo");
-  //       //spinner.stop();
-  //       escucharMsj();
-  //       //cliente.sendMessage('5493884719054@c.us', 'bot dice: que yo te amo');
-  //       //enviarDoc('5493884895231@c.us', "Angular async pipe y observables.pdf");
-  //   });
+    cliente.on('ready', () => {
+        console.log("Cliente listo");
+        //spinner.stop();
+        escucharMsj();
+        //cliente.sendMessage('5493884719054@c.us', 'bot dice: que yo te amo');
+        //enviarDoc('5493884895231@c.us', "Angular async pipe y observables.pdf");
+    });
 
-  //   cliente.on('auth_failure', () => {
-  //       //spinner.stop();
-  //       console.log("Error de autentificacion, vuelve a generar el QRCODE (borrar el anterior)");
-  //   });
+    cliente.on('auth_failure', () => {
+        //spinner.stop();
+        console.log("Error de autentificacion, vuelve a generar el QRCODE (borrar el anterior)");
+    });
 
-  //   cliente.initialize();
-  // }else{
-  //   console.log("No tenemos una sesion iniciada");
-  //   cliente = new Client({});
-  //   cliente.on('qr', qr => {
-  //       qrcode.generate(qr, { small: true });
-  //       console.log('QR RECEIVED', qr);
-  //   });
+    cliente.initialize();
+  }else{
+    console.log("No tenemos una sesion iniciada");
+    cliente = new Client({});
+    cliente.on('qr', qr => {
+        qrcode.generate(qr, { small: true });
+        console.log('QR RECEIVED', qr);
+    });
 
-  //   cliente.on('authenticated', (session) => {
-  //       //guardamos las credenciales de session para usar luego
-  //       sessionData = session;
-  //       fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
-  //           if (err) {
-  //               console.log(err);
-  //           }
-  //       });
-  //   });
+    cliente.on('authenticated', (session) => {
+        //guardamos las credenciales de session para usar luego
+        sessionData = session;
+        fs.writeFile(SESSION_FILE_PATH, JSON.stringify(session), (err) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+    });
 
-  //   cliente.initialize();
-  // } 
+    cliente.initialize();
+  } 
 
 }
 
