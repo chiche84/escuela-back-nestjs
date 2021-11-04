@@ -10,8 +10,7 @@ export class UsuariosController {
   @Post()
   async create(@Body() createUsuarioDto: CreateUsuarioDto,  @Res() res) {
     try {      
-      let respuesta = await this._usuariosService.crearUsuario(createUsuarioDto);
-      
+      let respuesta = await this._usuariosService.crearUsuario(createUsuarioDto);      
      
       if (respuesta) {
         return res.status(HttpStatus.CREATED).json({

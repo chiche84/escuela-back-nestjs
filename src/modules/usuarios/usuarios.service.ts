@@ -8,6 +8,7 @@ import { IUsuario } from './interfaces/usuario.interface';
 
 @Injectable()
 export class UsuariosService {
+  public VALORUSUARIO: string;
   constructor(@InjectModel('Usuarios') private readonly _usuarioModel: Model<IUsuario>){
 
   }

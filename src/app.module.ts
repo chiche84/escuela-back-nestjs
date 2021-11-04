@@ -25,6 +25,7 @@ import { TareasService } from './tareas.service';
 
 import { AppController } from './app.controller';
 
+
 @Module({
   imports: [ 
     AjustesModule, 
@@ -54,7 +55,7 @@ import { AppController } from './app.controller';
     PagosModule
   ],
   controllers: [
-    AppController
+    AppController,    
   ],
   providers: [
     AppService,

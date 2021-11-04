@@ -10,11 +10,79 @@ import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { ValidacionAlumnoFieldsPipe } from './pipes/validacionesAlumnos.pipe';
 import { AlumnosService } from './alumnos.service';
 import { IAlumno } from './interfaces/alumno.interface';
+import html_to_pdf = require('html-pdf-node');
+import { Client, MessageMedia } from 'whatsapp-web.js';
+var pdf = require('html-pdf');
+import * as fs from 'fs';
+
+const SESSION_FILE_PATH = '../../../session.json';
 
 @Controller('alumnos')
 export class AlumnosController {
     
   constructor(private readonly alumnoServicio: AlumnosService) {}
+
+  @Post('subirrecibo')
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'recibo', maxCount: 1},
+  ], {
+    storage: diskStorage({      
+      filename: (req, file, cb) => {
+        const filename: string = 'reciboParaEnviar';
+        const extension: string = path.parse(file.originalname).ext;
+        cb(null, `${filename}${extension}`)
+      }
+    })
+  }))
+  async subirRecibo(@Res() res: Response, @UploadedFiles() files: Express.Multer.File[] ) {
+      
+    let sessionData = require(SESSION_FILE_PATH);    
+    
+    let cliente = new Client({
+        session: sessionData
+    })
+    cliente.on('ready', () => {});
+    await cliente.initialize();
+    
+    const reciboNuevo = files['recibo'][0].path;   
+    let options = { format: 'A4', path: '' }; 
+    let file = { url: reciboNuevo };
+    var html = fs.readFileSync(reciboNuevo, 'utf8');
+    // html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
+    //   console.log("PDF Buffer: ", pdfBuffer);        
+    //   const mediaFile = new MessageMedia('application/pdf', pdfBuffer);
+    //   cliente.sendMessage('5493884719054@c.us', mediaFile).catch(err=> console.log(err));
+
+    //   }).catch(error => console.log(error));
+    
+    pdf.create(html).toFile('./pdficito.pdf',function(err, res) {
+      if (err) {
+          console.log('chelink',err)
+      } else {          
+          console.log('res',res);
+          const mediaFile = MessageMedia.fromFilePath(res.filename);
+          //const mediaFile1 = MessageMedia.fromFilePath('D:\\Node\\nestJs\\escuela-de-danzas-backend-nestjs\\1-Rocio-Alarcon.pdf');
+          //cliente.sendMessage('5493884719054@c.us', mediaFile.data).then(result=> console.log(result)).catch(err=> console.log('Error envio',err));
+          cliente.sendMessage('5493884719054@c.us',mediaFile)
+        }
+    });
+
+    try {
+
+      return res.status(HttpStatus.OK).json({
+        ok: true,
+        msj: "Se subio el recibo",
+        reciboNuevo
+      })
+      
+    } catch (error) {
+        return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+          ok:false,
+          msj: error,
+          reciboNuevo: ''
+        })
+    } 
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('subirdni')
