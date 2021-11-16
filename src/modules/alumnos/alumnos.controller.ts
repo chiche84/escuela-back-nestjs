@@ -13,7 +13,7 @@ import { IAlumno } from './interfaces/alumno.interface';
 import html_to_pdf = require('html-pdf-node');
 import { Client, MessageMedia } from 'whatsapp-web.js';
 var pdf = require('html-pdf');
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 
 const SESSION_FILE_PATH = '../../../session.json';
 
@@ -35,37 +35,42 @@ export class AlumnosController {
     })
   }))
   async subirRecibo(@Res() res: Response, @UploadedFiles() files: Express.Multer.File[] ) {
-      
-    let sessionData = require(SESSION_FILE_PATH);    
-    
-    let cliente = new Client({
-        session: sessionData
-    })
-    cliente.on('ready', () => {});
-    await cliente.initialize();
-    
+          
     const reciboNuevo = files['recibo'][0].path;   
-    let options = { format: 'A4', path: '' }; 
-    let file = { url: reciboNuevo };
-    var html = fs.readFileSync(reciboNuevo, 'utf8');
-    // html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
-    //   console.log("PDF Buffer: ", pdfBuffer);        
-    //   const mediaFile = new MessageMedia('application/pdf', pdfBuffer);
-    //   cliente.sendMessage('5493884719054@c.us', mediaFile).catch(err=> console.log(err));
+    let options = {width:'646px', heigth:'359px', path: '',  args: ['--no-sandbox', '--disable-setuid-sandbox'] }; 
+   
+    let html = '';
+    await fs.readFile(reciboNuevo, 'utf8')
+      .then(arch => {
+                  html = arch;                  
+                  return fs.writeFile('./htmlicito.html',html);
+      })
+      .then(resp=> { console.log("Ruta: ", resp)})
+      .catch(console.log)
 
-    //   }).catch(error => console.log(error));
+    let absolutePath = path.resolve("./htmlicito.html");    
+    let file = { url: absolutePath}
+
+    //convierte bien si viene el url con el html completo.. con encabezado y todo...
+    html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
+      console.log("PDF Buffer: ", pdfBuffer); 
+      fs.writeFile('./htmlicito.pdf', pdfBuffer).then()
+        .catch( (err)=> {
+              if (err) {
+                console.log("ERROR AL ESCRIBIR 1",err);
+              }
+            })
+    }).catch(error => console.log(error));
     
-    pdf.create(html).toFile('./pdficito.pdf',function(err, res) {
-      if (err) {
-          console.log('chelink',err)
-      } else {          
-          console.log('res',res);
-          const mediaFile = MessageMedia.fromFilePath(res.filename);
-          //const mediaFile1 = MessageMedia.fromFilePath('D:\\Node\\nestJs\\escuela-de-danzas-backend-nestjs\\1-Rocio-Alarcon.pdf');
-          //cliente.sendMessage('5493884719054@c.us', mediaFile.data).then(result=> console.log(result)).catch(err=> console.log('Error envio',err));
-          cliente.sendMessage('5493884719054@c.us',mediaFile)
-        }
-    });
+    //este convierte pal aca.. nose porque.. buscar otro o sino busar html a imagen
+    // pdf.create(html).toFile('./pdficito.pdf',function(err, res) {
+    //   if (err) {
+    //       console.log('chelink',err)
+    //   } else {          
+    //       console.log('res',res);         
+    //     }
+    // });
+    
 
     try {
 

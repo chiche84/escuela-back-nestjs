@@ -5,6 +5,7 @@ import { from, Observable } from 'rxjs';
 import { v2 } from "cloudinary";
 import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { IAlumno } from './interfaces/alumno.interface';
+import * as fs from 'fs';
 
 @Injectable()
 export class AlumnosService {

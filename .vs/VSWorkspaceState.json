@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\modules",
+    "\\src\\modules\\ajustes\\dto",
+    "\\src\\modules\\alumnos",
+    "\\src\\public"
+  ],
+  "SelectedNode": "\\src\\modules\\alumnos\\alumnos.service.ts",
+  "PreviewInSolutionExplorer": false
+}
