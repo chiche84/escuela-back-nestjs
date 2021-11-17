@@ -8,7 +8,7 @@ import { OpModule } from '../op/op.module';
 @Module({
   imports: [ 
     MongooseModule.forFeature([{ name: 'Pagos', schema: PagoSchema }], 'ConexionEscuelaDeDanza' ),
-    OpModule
+    OpModule,
   ],
   controllers: [PagosController],
   providers: [PagosService]

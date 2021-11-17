@@ -41,7 +41,7 @@ export class PagosService {
 
     return pago;
   }
-
+  
   findAll() {
     return `This action returns all pagos`;
   }

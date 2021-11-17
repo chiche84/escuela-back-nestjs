@@ -10,84 +10,15 @@ import { CreateAlumnoDto } from './dto/create-alumno.dto';
 import { ValidacionAlumnoFieldsPipe } from './pipes/validacionesAlumnos.pipe';
 import { AlumnosService } from './alumnos.service';
 import { IAlumno } from './interfaces/alumno.interface';
-import html_to_pdf = require('html-pdf-node');
-import { Client, MessageMedia } from 'whatsapp-web.js';
-var pdf = require('html-pdf');
-import * as fs from 'fs/promises';
 
-const SESSION_FILE_PATH = '../../../session.json';
+
+
 
 @Controller('alumnos')
 export class AlumnosController {
     
   constructor(private readonly alumnoServicio: AlumnosService) {}
-
-  @Post('subirrecibo')
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'recibo', maxCount: 1},
-  ], {
-    storage: diskStorage({      
-      filename: (req, file, cb) => {
-        const filename: string = 'reciboParaEnviar';
-        const extension: string = path.parse(file.originalname).ext;
-        cb(null, `${filename}${extension}`)
-      }
-    })
-  }))
-  async subirRecibo(@Res() res: Response, @UploadedFiles() files: Express.Multer.File[] ) {
-          
-    const reciboNuevo = files['recibo'][0].path;   
-    let options = {width:'646px', heigth:'359px', path: '',  args: ['--no-sandbox', '--disable-setuid-sandbox'] }; 
-   
-    let html = '';
-    await fs.readFile(reciboNuevo, 'utf8')
-      .then(arch => {
-                  html = arch;                  
-                  return fs.writeFile('./htmlicito.html',html);
-      })
-      .then(resp=> { console.log("Ruta: ", resp)})
-      .catch(console.log)
-
-    let absolutePath = path.resolve("./htmlicito.html");    
-    let file = { url: absolutePath}
-
-    //convierte bien si viene el url con el html completo.. con encabezado y todo...
-    html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
-      console.log("PDF Buffer: ", pdfBuffer); 
-      fs.writeFile('./htmlicito.pdf', pdfBuffer).then()
-        .catch( (err)=> {
-              if (err) {
-                console.log("ERROR AL ESCRIBIR 1",err);
-              }
-            })
-    }).catch(error => console.log(error));
-    
-    //este convierte pal aca.. nose porque.. buscar otro o sino busar html a imagen
-    // pdf.create(html).toFile('./pdficito.pdf',function(err, res) {
-    //   if (err) {
-    //       console.log('chelink',err)
-    //   } else {          
-    //       console.log('res',res);         
-    //     }
-    // });
-    
-
-    try {
-
-      return res.status(HttpStatus.OK).json({
-        ok: true,
-        msj: "Se subio el recibo",
-        reciboNuevo
-      })
-      
-    } catch (error) {
-        return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
-          ok:false,
-          msj: error,
-          reciboNuevo: ''
-        })
-    } 
-  }
+ 
 
   @UseGuards(JwtAuthGuard)
   @Post('subirdni')
