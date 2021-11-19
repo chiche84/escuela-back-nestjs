@@ -13,7 +13,7 @@ export class AppController {
   }
   @Get('tareas')
   async getTareas(){
-    const resultado = await this.tareaServicio.generarOP();  
+    const resultado = await this.tareaServicio.generarOP1();  
     return resultado;
   }
 }

@@ -6,7 +6,8 @@ export const AjusteSchema = new Schema({
     modoAplicacion: { type: String, require: true },
     fechaDesdeValidez: { type: Date, require: true},
     fechaHastaValidez: { type: Date, require: true},
-    idServicioAfectado: { type: Schema.Types.ObjectId, ref: 'Servicios'},
+    cantDias: { type: Number},
+    cantVeces: { type: Number},
     estaActivo: { type: Boolean, require: true, default: true }
 },
 { 

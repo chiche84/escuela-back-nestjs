@@ -1,4 +1,5 @@
 export interface IAjuste extends Document {
+    _id?: string;
     descripcion: string;
     monto: number;
     esPorcentual: boolean;
@@ -10,8 +11,8 @@ export interface IAjuste extends Document {
 }
 
   export enum EModosAplicacion {
-      AlPagar = 'Al Pagar',
+      AlPagarCantDias = 'Al pagar (cantidad dias)',
       AlGenerar = 'Al Generarse el Servicio',
-      PorCantidad = 'Por Cantidad', //cant de veces que se genera el servicio
-      PorFechas = 'Al Pagar y controlar fechas'
+      AlPagarCantVeces = 'Al pagar (cantidad veces)', 
+      MesVencido = 'Mes vencido'
   }

@@ -46,16 +46,6 @@ export class ServiciosService {
             alumnosxservicio
         };
     }
-
-    //const ajustes =  await this.ajusteModel.find({ idServicioAfectado: id, estaActivo: true}, 'descripcion monto fechaDesdeValidez fechaHastaValidez');
-    const ajustes = await this.ajustesServicio.ajusteByIdServicioAfectado(id);
-    if (ajustes.length > 0) {
-      return {
-        ok: false,
-        msj: "Hay ajustes que hacen referencia a ese Servicio, no se puede eliminar",
-        ajustes
-      }
-    }
     
     const servicioEliminado = await this.servicioModel.findByIdAndUpdate(id, { estaActivo: false }, {new: true});    
     if (servicioEliminado) {

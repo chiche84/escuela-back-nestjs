@@ -5,6 +5,7 @@ export class CreateAjusteDto {
     readonly modoAplicacion: string;
     readonly fechaDesdeValidez: string;
     readonly fechaHastaValidez: string;
-    readonly idServicioAfectado: string;
+    readonly cantDias: number;
+    readonly cantVeces: number;
     readonly estaActivo: boolean;
 }

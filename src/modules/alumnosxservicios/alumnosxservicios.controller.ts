@@ -11,7 +11,6 @@ export class AlumnosxServiciosController {
   @UseGuards(JwtAuthGuard)  
   @Post()
   async crear(@Body() createAlumnosxservicioDto: CreateAlumnosxservicioDto){//, @Res() res: Response) {     
-    
     try {      
       const alumnoxservicio = await this.alumnosxserviciosService.crearAlumnoxServicio(createAlumnosxservicioDto);
       

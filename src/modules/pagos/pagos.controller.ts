@@ -6,9 +6,9 @@ import { Response } from 'express';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import html_to_pdf = require('html-pdf-node');
-var pdf = require('html-pdf');
 import path = require('path');
 import * as fs from 'fs/promises';
+import * as nodemailer from 'nodemailer';
 
 @Controller('pagos')
 export class PagosController {
@@ -70,16 +70,58 @@ export class PagosController {
     let absolutePath = path.resolve("./htmlicito.html");    
     let file = { url: absolutePath}
 
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'elantigal@gmail.com',
+        pass: 'dtqugmeaeubkuhfh'
+      }
+    });
+    
+    let mailOptions = {}
+
     //convierte bien si viene el objeto url completo con el html completo (con encabezado y todo)
-    html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
+    await html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
       console.log("PDF Buffer: ", pdfBuffer); 
       fs.writeFile('./htmlicito.pdf', pdfBuffer).then()
         .catch( (err)=> {
               if (err) {
                 console.log("ERROR AL ESCRIBIR 1",err);
               }
-            })
+            });
+
+      mailOptions = {
+        from: 'elantigal@gmail.com',
+        to: 'chiche84@gmail.com',
+        subject: `Recibo Email`,
+        html:`Se adjunta el recibo de pago del mes de..`,
+        attachments: [           
+          {   // binary buffer as an attachment
+            filename: 'recibito.pdf',
+            content: Buffer.from(pdfBuffer,'utf-8')
+        },
+        ]
+      };
+
     }).catch(error => console.log(error));
+    
+    transporter.sendMail(mailOptions, function(error, info){
+              if (error) {
+                console.log(error);
+                return res.status(HttpStatus.CONFLICT).json({
+                  ok: false,
+                  msj: error
+                }) 
+              } else {
+                console.log('Email enviado: ' + info.response);
+                return res.status(HttpStatus.OK).json({
+                  ok: true,
+                  msj: 'Email enviado'
+                })
+              }
+            });
+
+    
     
     //este convierte pal aca.. nose porque.. buscar otro o sino busar html a imagen
     // pdf.create(html).toFile('./pdficito.pdf',function(err, res) {
@@ -91,21 +133,21 @@ export class PagosController {
     // });
     
 
-    try {
+    // try {
 
-      return res.status(HttpStatus.OK).json({
-        ok: true,
-        msj: "Se subio el recibo",
-        reciboNuevo
-      })
+    //   return res.status(HttpStatus.OK).json({
+    //     ok: true,
+    //     msj: "Se subio el recibo",
+    //     reciboNuevo
+    //   })
       
-    } catch (error) {
-        return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
-          ok:false,
-          msj: error,
-          reciboNuevo: ''
-        })
-    } 
+    // } catch (error) {
+    //     return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
+    //       ok:false,
+    //       msj: error,
+    //       reciboNuevo: ''
+    //     })
+    // } 
   }
   
   @Get()

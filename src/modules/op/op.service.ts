@@ -21,7 +21,7 @@ export class OpService {
   }
 
  
-  async buscarPorAlumnoxServicioMes(idAlumnoxServicio: string, fecha:Date, idAjuste: string ){    
+  async buscarPorAlumnoxServicioMes(idAlumnoxServicio: string, fecha:Date, idAjuste?: string ){    
     let miliseg = Date.parse(fecha.toString());
     let fechaChe = new Date(miliseg)
     
@@ -31,14 +31,22 @@ export class OpService {
     let ultimoDia = Date.parse(new Date(y, m + 1, 0,23,59,59).toISOString());    
     let primerDia1 = new Date(primerDia);
     let ultimoDia1 = new Date(ultimoDia);
-    return await this.opsModel.find({ estaActivo:true, 
-                                      idAlumnoxServicioGen: { $eq: idAlumnoxServicio}, 
-                                      fechaGeneracion: { $gte: primerDia1 , $lte: ultimoDia1},
-                                      idAjustesAplicados: { $eq: idAjuste} 
-                                    })
-                              .populate({ path: 'idAjustesAplicados', select: 'descripcion modoAplicacion'})
-                                      //.select('fechaGeneracion')                                    
-                  .catch(x=> [] )   
+    if (idAjuste) {
+      return await this.opsModel.find({ estaActivo:true, 
+                                        idAlumnoxServicioGen: { $eq: idAlumnoxServicio}, 
+                                        fechaGeneracion: { $gte: primerDia1 , $lte: ultimoDia1},
+                                        idAjustesAplicados: { $eq: idAjuste} 
+                                      })
+                                .populate({ path: 'idAjustesAplicados', select: 'descripcion modoAplicacion'})
+                                        //.select('fechaGeneracion')                                    
+                    .catch(x=> [] )         
+    }else{
+      return await this.opsModel.find({ estaActivo:true, 
+                                        idAlumnoxServicioGen: { $eq: idAlumnoxServicio}, 
+                                        fechaGeneracion: { $gte: primerDia1 , $lte: ultimoDia1},
+                                      })                               
+                                .catch(x=> [] )  
+    }
   }
 
   
