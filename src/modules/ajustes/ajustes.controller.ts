@@ -55,6 +55,7 @@ export class AjustesController {
       })
     }    
   }   
+  
   @UseGuards(JwtAuthGuard)
   @Get()
   async ver() {

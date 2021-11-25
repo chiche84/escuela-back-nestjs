@@ -1,3 +1,4 @@
+
 export class CreateAlumnoDto{
     readonly apellido: string;
     readonly nombre: string;

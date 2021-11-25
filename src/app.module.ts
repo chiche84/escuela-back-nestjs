@@ -39,7 +39,7 @@ import { AppController } from './app.controller';
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,        
-    }),      
+    }),          
     RefBarriosModule, 
     ServiciosModule, 
     UsuariosModule, 

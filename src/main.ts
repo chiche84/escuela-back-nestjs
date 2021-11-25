@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 import { v2 } from 'cloudinary';
 import { AppModule } from './app.module';
 
@@ -9,6 +10,17 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api/v1');  
 
+  const config = new DocumentBuilder()
+  .setTitle('Escuela de Danzas')
+  .setDescription('APIRestfull de escuela de danzas')
+  .setVersion('1.0')
+  .addTag('danza')
+  .addBearerAuth()
+  .build()
+
+  const swaggerOptions : SwaggerDocumentOptions = { ignoreGlobalPrefix:true };
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('swagger', app, document, {swaggerOptions} );
 
   const cloudinary = v2;
   if (process.env.CLOUDINARY_NAME === undefined || process.env.CLOUDINARY_APIKEY === undefined || process.env.CLOUDINARY_APISECRET === undefined) {
