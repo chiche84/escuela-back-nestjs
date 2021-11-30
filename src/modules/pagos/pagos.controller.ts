@@ -41,6 +41,15 @@ export class PagosController {
     }
   }
 
+  @Post('multiples')
+  async pagarMuchos(@Body() createPagosDto: CreatePagoDto[], @Res() res: Response){
+    console.log(createPagosDto);
+    return res.status(HttpStatus.OK).json({
+      ok: true,
+      createPagosDto
+    })
+  }
+
   @Post('subirrecibo')
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'recibo', maxCount: 1},
