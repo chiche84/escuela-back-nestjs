@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AjustesModule } from './modules/ajustes/ajustes.module';
 import { AlumnosModule } from './modules/alumnos/alumnos.module';
@@ -24,6 +25,7 @@ import { ServiciosService } from './modules/servicios/servicios.service';
 import { TareasService } from './tareas.service';
 
 import { AppController } from './app.controller';
+import { join } from 'path';
 
 
 @Module({
@@ -39,7 +41,18 @@ import { AppController } from './app.controller';
         useUnifiedTopology: true,
         useCreateIndex: true,
         useFindAndModify: false,        
-    }),          
+    }),     
+    TypeOrmModule.forRoot({
+      type: "mongodb",
+      //host: "localhost",
+      //port: 27017,
+      //database: "escueladedanzaDB",   
+      url: process.env.MONGODB_URI_LOCAL! + process.env.MONGODB_CLUSTER_LOCAL! + process.env.MONGODB_DBNAME!,
+      autoLoadEntities: true,  
+      //entities: [ join(__dirname, '**/**.entity{.ts,.js}')],
+      useNewUrlParser: true,
+      logging: true, 
+    }),     
     RefBarriosModule, 
     ServiciosModule, 
     UsuariosModule, 

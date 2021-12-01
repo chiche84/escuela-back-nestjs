@@ -49,6 +49,25 @@ export class RefBarriosController {
       );
   }
 
+  @Get('orm')
+  async verORM(@Res() res) {
+    try {
+      const barrios = await this.refBarriosService.verBarrios1();
+      
+      res.status(200).json({
+          ok: true,
+          msj: "Lista de Barrios ORM",
+          barrios
+      })
+    } catch (error) {
+        res.status(500).json({
+            ok: false,
+            msj: error,
+            barrios: null
+        })
+    }    
+  }
+
   //@UseGuards(JwtAuthGuard)
   @Get()
   // async ver(@Res() res) {
