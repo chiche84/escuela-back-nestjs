@@ -1,10 +1,9 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { UpdatePagoDto } from './dto/update-pago.dto';
-import { Model } from 'mongoose';
+import { Model, Connection, createConnection } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Ipago } from './interfaces/pago.interface';
-import * as mongoose from 'mongoose';
 import { OpService } from '../op/op.service';
 import { UpdateOpDto } from '../op/dto/update-op.dto';
 
@@ -12,51 +11,65 @@ import { UpdateOpDto } from '../op/dto/update-op.dto';
 export class PagosService {
 
   constructor( @InjectModel('Pagos') private readonly pagosModel: Model<Ipago>,
-                @InjectConnection('ConexionEscuelaDeDanza') private readonly conexionDanza: mongoose.Connection,
+                @InjectConnection('ConexionEscuelaDeDanza') private conexionDanza: Connection,
                 private readonly opService: OpService){}
 
   async create(createPagoDto: CreatePagoDto) { 
     let pago: Ipago;
-    //const sesion = await this.conexionDanza.startSession();
+    const conexionSesion = await this.conexionDanza.startSession();
+   
     try {
-      //sesion.startTransaction();
-      pago =  await this.pagosModel.create({ 
-        idOpPagada: createPagoDto.idOpPagada, 
-        monto: createPagoDto.monto, 
-        fechaPago: createPagoDto.fechaPago, 
-        idUsuario: createPagoDto.idUsuario,
-        //session: sesion
-        });
-        
-      if (! pago) {
-        throw new UnprocessableEntityException();
-      }
-      //POST CONDICION: restar saldo de la OP    
-      const opModificada = await this.opService.opById(pago.idOpPagada);
-      const saldoRestante = opModificada.monto - pago.monto;  
-      const objModif: UpdateOpDto = { saldo: saldoRestante };
-      const actualizarOP = await this.opService.modificarOP(pago.idOpPagada, objModif);
-      if (actualizarOP) {
-        console.log("entro al commit");
-        //await sesion.commitTransaction();
-      }
+      conexionSesion.startTransaction();
       
+      await this.conexionDanza.transaction(async (sesion) => {
+        pago =  await this.pagosModel.create({ 
+          idOpPagada: createPagoDto.idOpPagada, 
+          monto: createPagoDto.monto, 
+          fechaPago: createPagoDto.fechaPago, 
+          idUsuario: createPagoDto.idUsuario,
+          session: sesion
+          });
+          if (! pago) {
+            throw new UnprocessableEntityException();
+          }
+          //POST CONDICION: restar saldo de la OP    
+          const opModificada = await this.opService.opById(pago.idOpPagada);
+          const saldoRestante = opModificada.monto - pago.monto;  
+          const objModif: UpdateOpDto = { saldo: saldoRestante };
+          const actualizarOP = await this.opService.modificarOP(pago.idOpPagada, objModif, sesion); 
+      }).then(resp=> {
+            console.log("Respuesta", resp);
+            return pago;
+      }).catch(err=> {
+        console.log("Error", err);        
+        return null;
+      })
+            
     } catch (error) {
       console.log("fue pal error");
-      //await sesion.abortTransaction();
       pago = null;
     } 
-    //sesion.endSession();    
+    conexionSesion.endSession();    
     return pago;
   }
 
+ 
+
+
   async crearmuchos( createPagoDto: CreatePagoDto[]){
     let pagos: Ipago[];
-    for (let index = 0; index < createPagoDto.length; index++) {
-      const element = createPagoDto[index];
-      console.log(element);
-      let pagoNuevo = await this.create(element)
-      pagos.push(pagoNuevo);  
+    try {      
+      pagos = await this.pagosModel.create(createPagoDto);
+
+      for (let index = 0; index < pagos.length; index++) {
+        const pago = pagos[index];
+        let opModificada = await this.opService.opById(pago.idOpPagada);
+        let saldoRestante = opModificada.monto - pago.monto;  
+        let objModif: UpdateOpDto = { saldo: saldoRestante };
+        let actualizarOP = await this.opService.modificarOP(pago.idOpPagada, objModif);
+      }
+    } catch (error) {
+      
     }
     return pagos;
   }
