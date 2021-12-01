@@ -43,10 +43,10 @@ export class PagosController {
 
   @Post('multiples')
   async pagarMuchos(@Body() createPagosDto: CreatePagoDto[], @Res() res: Response){
-    console.log(createPagosDto);
+    const muchos = this.pagosService.crearmuchos(createPagosDto);
     return res.status(HttpStatus.OK).json({
       ok: true,
-      createPagosDto
+      muchos
     })
   }
 

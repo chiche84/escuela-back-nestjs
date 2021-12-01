@@ -17,10 +17,17 @@ export class PagosService {
 
   async create(createPagoDto: CreatePagoDto) { 
     let pago: Ipago;
-    const sesion = await this.conexionDanza.startSession();
-    sesion.startTransaction();
+    //const sesion = await this.conexionDanza.startSession();
     try {
-      pago =  await this.pagosModel.create(createPagoDto);
+      //sesion.startTransaction();
+      pago =  await this.pagosModel.create({ 
+        idOpPagada: createPagoDto.idOpPagada, 
+        monto: createPagoDto.monto, 
+        fechaPago: createPagoDto.fechaPago, 
+        idUsuario: createPagoDto.idUsuario,
+        //session: sesion
+        });
+        
       if (! pago) {
         throw new UnprocessableEntityException();
       }
@@ -30,16 +37,28 @@ export class PagosService {
       const objModif: UpdateOpDto = { saldo: saldoRestante };
       const actualizarOP = await this.opService.modificarOP(pago.idOpPagada, objModif);
       if (actualizarOP) {
-        sesion.commitTransaction();
+        console.log("entro al commit");
+        //await sesion.commitTransaction();
       }
+      
     } catch (error) {
-      await sesion.abortTransaction();
-      return null;
-    } finally {
-      sesion.endSession();
-    }
-
+      console.log("fue pal error");
+      //await sesion.abortTransaction();
+      pago = null;
+    } 
+    //sesion.endSession();    
     return pago;
+  }
+
+  async crearmuchos( createPagoDto: CreatePagoDto[]){
+    let pagos: Ipago[];
+    for (let index = 0; index < createPagoDto.length; index++) {
+      const element = createPagoDto[index];
+      console.log(element);
+      let pagoNuevo = await this.create(element)
+      pagos.push(pagoNuevo);  
+    }
+    return pagos;
   }
   
   findAll() {
