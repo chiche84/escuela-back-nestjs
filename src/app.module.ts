@@ -25,7 +25,7 @@ import { ServiciosService } from './modules/servicios/servicios.service';
 import { TareasService } from './tareas.service';
 
 import { AppController } from './app.controller';
-import { join } from 'path';
+import { configService } from './config/config.service';
 
 
 @Module({
@@ -42,17 +42,14 @@ import { join } from 'path';
         useCreateIndex: true,
         useFindAndModify: false,        
     }),     
-    TypeOrmModule.forRoot({
-      type: "mongodb",
-      //host: "localhost",
-      //port: 27017,
-      //database: "escueladedanzaDB",   
-      url: process.env.MONGODB_URI_LOCAL! + process.env.MONGODB_CLUSTER_LOCAL! + process.env.MONGODB_DBNAME!,
-      autoLoadEntities: true,  
-      //entities: [ join(__dirname, '**/**.entity{.ts,.js}')],
-      useNewUrlParser: true,
-      logging: true, 
-    }),     
+    TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
+    // TypeOrmModule.forRoot({
+    //   type: "mongodb",
+    //   url: process.env.MONGODB_URI_LOCAL! + process.env.MONGODB_CLUSTER_LOCAL! + process.env.MONGODB_DBNAME!,
+    //   autoLoadEntities: true,  
+    //   useNewUrlParser: true,
+    //   logging: true, 
+    // }),     
     RefBarriosModule, 
     ServiciosModule, 
     UsuariosModule, 

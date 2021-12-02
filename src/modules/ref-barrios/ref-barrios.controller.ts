@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Res, Put, HttpStatus, UseGuards } from '@nestjs/common';
 import { map, Observable, catchError } from 'rxjs';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { CreateRefBarrioDto } from './dto/create-ref-barrio.dto';
@@ -49,10 +49,29 @@ export class RefBarriosController {
       );
   }
 
+  @Post('orm')
+  async crearORM(@Body() createRefBarrioDto: CreateRefBarrioDto, @Res() res) {
+
+    try {
+        const barrio = await this.refBarriosService.crearBarrioEntity(createRefBarrioDto);
+        return res.status(201).json({
+          ok: true,
+          msj: "Barrio Creado",
+          barrio
+        })     
+    } catch (error) {
+        res.status(500).json({
+          ok: false,
+          msj: error,
+          barrio: null
+        })      
+    }
+    
+  }   
   @Get('orm')
   async verORM(@Res() res) {
     try {
-      const barrios = await this.refBarriosService.verBarrios1();
+      const barrios = await this.refBarriosService.verBarriosEntity();
       
       res.status(200).json({
           ok: true,

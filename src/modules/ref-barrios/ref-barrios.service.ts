@@ -1,4 +1,3 @@
-import { RefBarrios1 } from './entities/ref-barrios.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -9,13 +8,14 @@ import { IAlumno } from '../alumnos/interfaces/alumno.interface';
 import { AlumnosService } from '../alumnos/alumnos.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { RefBarriosEntity } from '../../model/ref-barrio.entity';
 
 
 @Injectable()
 export class RefBarriosService {
   constructor( @InjectModel('RefBarrios') private readonly refBarrioModel: Model<IRefBarrio>,
               private readonly alumnoServicio: AlumnosService,
-              @InjectRepository(RefBarrios1)  private barriosRepository: Repository<RefBarrios1>){
+              @InjectRepository(RefBarriosEntity) private RefBarriosEntidad: Repository<RefBarriosEntity>){
   }
   
 
@@ -24,6 +24,11 @@ export class RefBarriosService {
   //     return barrio.save(); 
   // }
 
+  async crearBarrioEntity(createRefBarrioDto: CreateRefBarrioDto){
+    const nuevoBarrio = await this.RefBarriosEntidad.create(createRefBarrioDto);
+    await this.RefBarriosEntidad.save(nuevoBarrio);
+    return 
+  }
   crearBarrio(createRefBarrioDto: CreateRefBarrioDto): Observable<IRefBarrio> { 
     return from(this.refBarrioModel.create(createRefBarrioDto)); 
   }
@@ -32,11 +37,12 @@ export class RefBarriosService {
   //   const barrios = await this.refBarrioModel.find({ estaActivo: true });
   //   return barrios;
   // }
-async verBarrios1(): Promise<RefBarrios1[]>{
-    const resul = await this.barriosRepository.find({});
-    console.log(resul);
-    return resul;
-}
+
+  async verBarriosEntity() {
+    const barrios = await this.RefBarriosEntidad.find({});
+    return barrios;
+  }
+
   verBarrios(): Observable<IRefBarrio[]> {
     return from(this.refBarrioModel.find({ estaActivo: true }))
             .pipe(
