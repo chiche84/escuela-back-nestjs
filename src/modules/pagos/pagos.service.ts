@@ -37,8 +37,7 @@ export class PagosService {
           const saldoRestante = opModificada.monto - pago.monto;  
           const objModif: UpdateOpDto = { saldo: saldoRestante };
           const actualizarOP = await this.opService.modificarOP(pago.idOpPagada, objModif, sesion); 
-      }).then(resp=> {
-            console.log("Respuesta", resp);
+      }).then(resp=> {            
             return pago;
       }).catch(err=> {
         console.log("Error", err);        

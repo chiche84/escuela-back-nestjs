@@ -36,9 +36,7 @@ import { AppController } from './app.controller';
     //MongooseModule.forRoot(process.env.MONGODB_URI! + process.env.MONGODB_USER! + process.env.MONGODB_PASSWORD! + process.env.MONGODB_CLUSTER! + process.env.MONGODB_DBNAME! , {   
         connectionName: 'ConexionEscuelaDeDanza',
         useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-        useFindAndModify: false,        
+        useUnifiedTopology: true,    
     }),          
     RefBarriosModule, 
     ServiciosModule, 
