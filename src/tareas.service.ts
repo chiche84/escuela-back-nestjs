@@ -51,7 +51,8 @@ constructor(private readonly AlumnosxserviciosServicio: AlumnosxServiciosService
                                 break;
                                 case ETiposGeneracion.Anual:
                                     break;
-                                case ETiposGeneracion.Diaria:                                
+                                case ETiposGeneracion.Diaria:    
+                                case ETiposGeneracion.Ocasional:                                                                
                                 break;
                             }                            
                         }

@@ -84,10 +84,9 @@ export class PagosService {
     await readFile(recibo, 'utf8')
       .then(arch => {
                   html = arch;                  
-                  //return writeFile('./htmlicito.html',html);
                   writeFile('./htmlicito.html',html);
       })
-      .then(resp=> { console.log("Ruta: ", resp)})
+      .then()
       .catch(console.log)
 
     let absolutePath = path.resolve("./htmlicito.html");    
@@ -97,7 +96,7 @@ export class PagosService {
     await html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
       console.log("PDF Buffer: ", pdfBuffer); 
       writeFile(`./${nombre}.pdf`, pdfBuffer).then(resp=> {
-        console.log('PDF creado', resp);
+        console.log('PDF creado');
         unlink(absolutePath);
         return nombre;
       })
@@ -147,10 +146,6 @@ export class PagosService {
         return 'Email enviado';
       }
     });
-  }
-
-  async descargarRecibo(){
-
   }
 
   findAll() {

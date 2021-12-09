@@ -67,35 +67,14 @@ export class PagosController {
     const resul =  await this.pagosService.crearRecibo(reciboNuevo, nombrePdf);
     console.log('Resultado', resul);
     return res.json({nombrePdf});
-
-    // if (crearRecibo !== null) {
-    //   let direccionEmail = 'chiche84@gmail.com';
-    //   const enviarMail = await this.pagosService.enviarEmailRecibo(direccionEmail,nombrePdf);
-    //   if (enviarMail !== null) {
-    //     return res.status(HttpStatus.OK).json({
-    //       ok: true,
-    //       msj: 'Email enviado correctamente a ' + direccionEmail, 
-    //     })
-    //   }else{
-    //     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    //       ok: false,
-    //       msj: 'No se pudo enviar el Email', 
-    //     })
-    //   }
-    // }else{
-    //   return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-    //     ok: false,
-    //     msj: 'No se pudo crear el recibo', 
-    //   })
-    // }
-
   }
   
   @Get('enviarrecibo/:nombre/:email')
   async enviarRecibo(@Param('nombre') nombreArchivo: string, @Param('email') email: string, @Res() res: Response){
     
     const enviarMail = await this.pagosService.enviarEmailRecibo(email, nombreArchivo);
-      if (enviarMail !== null) {
+    console.log('enviarMail', enviarMail);
+      if (enviarMail !== undefined) {
         return res.status(HttpStatus.OK).json({
           ok: true,
           msj: 'Email enviado correctamente a ' + email, 

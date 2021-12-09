@@ -32,12 +32,16 @@ import { AppController } from './app.controller';
     AlumnosModule,
     AuthModule,
     ConfigModule.forRoot({ envFilePath: '.env' }), 
-    MongooseModule.forRoot( process.env.MONGODB_URI_LOCAL! + process.env.MONGODB_CLUSTER_LOCAL! + process.env.MONGODB_DBNAME! , {
-    //MongooseModule.forRoot(process.env.MONGODB_URI! + process.env.MONGODB_USER! + process.env.MONGODB_PASSWORD! + process.env.MONGODB_CLUSTER! + process.env.MONGODB_DBNAME! , {   
+    MongooseModule.forRoot( process.env.MONGODB_URI_LOCAL! + process.env.MONGODB_CLUSTER_LOCAL! + process.env.MONGODB_DBNAME! , {    
         connectionName: 'ConexionEscuelaDeDanza',
         useNewUrlParser: true,
         useUnifiedTopology: true,    
     }),          
+    MongooseModule.forRoot(process.env.MONGODB_URI! + process.env.MONGODB_USER! + process.env.MONGODB_PASSWORD! + process.env.MONGODB_CLUSTER! + process.env.MONGODB_DBNAME! , {   
+          connectionName: 'ConexionEscuelaDeDanzaAtlas',
+          useNewUrlParser: true,
+          useUnifiedTopology: true,    
+      }),     
     RefBarriosModule, 
     ServiciosModule, 
     UsuariosModule, 

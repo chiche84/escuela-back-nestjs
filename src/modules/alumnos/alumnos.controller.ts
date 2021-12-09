@@ -61,11 +61,9 @@ export class AlumnosController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async crear(@Body() createAlumnoDto: CreateAlumnoDto, @Res() res: Response){    
-    try {
-      console.log(createAlumnoDto);
+    try {      
       const alumno = await this.alumnoServicio.crearAlumno(createAlumnoDto);
-      console.log(alumno);
-      res.status(HttpStatus.CREATED).json({
+      return res.status(HttpStatus.CREATED).json({
           ok: true,
           msj: "Se creo el alumno",
           alumno
@@ -189,7 +187,45 @@ export class AlumnosController {
 
   }
 
-
+  @UseGuards(JwtAuthGuard)
+  @Get('ver/atlas')
+  async verAtlas(@Res() res: Response){
+    try {
+      const alumnosAtlas = await this.alumnoServicio.verAlumnosAtlas();
+      
+      res.status(HttpStatus.OK).json({
+          ok: true,
+          msj: "Lista de Alumnos Atlas",
+          alumnosAtlas
+      })
+    } catch (error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            ok: false,
+            msj: error,
+            alumnosAtlas: null
+        })
+    }    
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('migrar/atlas')
+  async migrar(@Res() res: Response){
+    try {
+      const alumnosAtlas = await this.alumnoServicio.migrarAlumnos();
+      
+      res.status(HttpStatus.OK).json({
+          ok: true,
+          msj: "Lista de Alumnos Migrados Atlas",
+          alumnosAtlas
+      })
+    } catch (error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            ok: false,
+            msj: error,
+            alumnosAtlas: null
+        })
+    }    
+  }
   // // Get Products /product
   //   // @Get('/list')
   //   @Get('/')

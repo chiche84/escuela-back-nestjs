@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Res, Query, Put, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpException, HttpStatus, Res, Query, Put, NotFoundException, UseGuards } from '@nestjs/common';
 import { OpService } from './op.service';
 import { CreateOpDto } from './dto/create-op.dto';
 import { UpdateOpDto } from './dto/update-op.dto';
 import { Response } from 'express';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('op')
 export class OpController {
   constructor(private readonly opService: OpService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createOpDto: CreateOpDto) {
     try {
@@ -27,6 +29,7 @@ export class OpController {
     
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('buscarPorAlumnoxServicioMes')
   async buscarPorAlumnoxServicioMes(@Body() body:any){
     let fecha : Date;
@@ -36,6 +39,7 @@ export class OpController {
     return await this.opService.buscarPorAlumnoxServicioMes(idAlumnoxServicio, fecha, idAjuste);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('buscarporestadoalumno')
   async buscarPorEstadoAlumno(@Query('estado') estado: 'impago' | 'pagado' | 'todos', @Query('idAlumno') idAlumno: string, @Res() res: Response){
         
@@ -63,12 +67,13 @@ export class OpController {
     }
   }
    
-
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(@Param('id') id: string, @Body() updateOpDto: UpdateOpDto) {
     return this.opService.modificarOP(id, updateOpDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.opService.remove(+id);

@@ -59,7 +59,7 @@ export class OpService {
                           match: { estaActivo: { $eq: true}, idAlumno: {$eq: idAlumno} },
                           populate: [
                                       { path: 'idServicio', select: 'descripcion precio tipoGeneracion',  match: { estaActivo: { $eq: true}} }, 
-                                      { path: 'idAlumno', select: 'apellido nombre',  match: { estaActivo: { $eq: true}} }
+                                      { path: 'idAlumno', select: 'apellido nombre email',  match: { estaActivo: { $eq: true}} }
                                     ] 
                   }
 
@@ -69,7 +69,7 @@ export class OpService {
                           match: { estaActivo: { $eq: true} },
                           populate: [
                                       { path: 'idServicio', select: 'descripcion precio tipoGeneracion',  match: { estaActivo: { $eq: true}} }, 
-                                      { path: 'idAlumno', select: 'apellido nombre',  match: { estaActivo: { $eq: true}} }
+                                      { path: 'idAlumno', select: 'apellido nombre email',  match: { estaActivo: { $eq: true}} }
                                     ] 
                   }
     }

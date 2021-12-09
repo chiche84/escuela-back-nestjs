@@ -8,7 +8,8 @@ import { IAlumno } from './interfaces/alumno.interface';
 
 @Injectable()
 export class AlumnosService {
-    constructor(@InjectModel('Alumnos') private readonly alumnoModel: Model<IAlumno>){
+    constructor(@InjectModel('Alumnos') private readonly alumnoModel: Model<IAlumno>,
+                @InjectModel('AlumnosAtlas') private readonly alumnoModelAtlas: Model<IAlumno>){
     }
     
       async crearAlumno(createAlumnoDto: CreateAlumnoDto): Promise<IAlumno> {
@@ -66,5 +67,15 @@ export class AlumnosService {
         return null;
       }
       
+      async verAlumnosAtlas(){
+        const alumnos = await this.alumnoModelAtlas.find({ estaActivo: true }).populate({ path:'idRefBarrio', select: 'nombreBarrio' });
+        return alumnos;
+      }
+
+      async migrarAlumnos(){
+        const alumnosLocales = await this.alumnoModel.find({ estaActivo: true });
+        const insertarAtlas = await this.alumnoModelAtlas.insertMany(alumnosLocales);
+        return insertarAtlas;
+      }
   
 }
