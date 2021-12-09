@@ -38,7 +38,7 @@ export class PagosService {
           }
           //POST CONDICION: restar saldo de la OP    
           const opModificada = await this.opService.opById(pago.idOpPagada);
-          const saldoRestante = opModificada.monto - pago.monto;  
+          const saldoRestante = opModificada.saldo - pago.monto;  
           const objModif: UpdateOpDto = { saldo: saldoRestante };
           const actualizarOP = await this.opService.modificarOP(pago.idOpPagada, objModif, sesion); 
       }).then(resp=> {            
@@ -67,7 +67,7 @@ export class PagosService {
       for (let index = 0; index < pagos.length; index++) {
         const pago = pagos[index];
         let opModificada = await this.opService.opById(pago.idOpPagada);
-        let saldoRestante = opModificada.monto - pago.monto;  
+        let saldoRestante = opModificada.saldo - pago.monto;  
         let objModif: UpdateOpDto = { saldo: saldoRestante };
         let actualizarOP = await this.opService.modificarOP(pago.idOpPagada, objModif);
       }
@@ -80,7 +80,7 @@ export class PagosService {
   async crearRecibo(recibo: string, nombre:string){
     let options = {width:'646px', heigth:'359px', path: '',  args: ['--no-sandbox', '--disable-setuid-sandbox'] }; 
    
-    let html = '';
+    let html = '';    
     await readFile(recibo, 'utf8')
       .then(arch => {
                   html = arch;                  
@@ -98,7 +98,8 @@ export class PagosService {
       console.log("PDF Buffer: ", pdfBuffer); 
       writeFile(`./${nombre}.pdf`, pdfBuffer).then(resp=> {
         console.log('PDF creado', resp);
-        return 'PDF creado';
+        unlink(absolutePath);
+        return nombre;
       })
         .catch( (err)=> {
               if (err) {
@@ -142,7 +143,7 @@ export class PagosService {
       } else {
         console.log('Email enviado: ' + info.response);
         //aca debo eliminar el recibo que ya se envio
-        //unlink(`./${nombrearchivo}.pdf`);
+        unlink(`./${nombrearchivo}.pdf`);
         return 'Email enviado';
       }
     });

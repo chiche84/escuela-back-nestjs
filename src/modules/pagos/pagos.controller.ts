@@ -5,10 +5,8 @@ import { UpdatePagoDto } from './dto/update-pago.dto';
 import { response, Response } from 'express';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import html_to_pdf = require('html-pdf-node');
+import { unlink } from 'fs/promises';
 import path = require('path');
-import * as nodemailer from 'nodemailer';
-import { unlink, writeFile, readFile  } from 'fs/promises';
 
 @Controller('pagos')
 export class PagosController {
@@ -65,8 +63,10 @@ export class PagosController {
   async subirRecibo(@Body() body, @Res() res: Response, @UploadedFiles() files: Express.Multer.File[] ) {
           
     const reciboNuevo = files['recibo'][0].path;   
-    const nombrePdf = body.idPago;    
-    return await this.pagosService.crearRecibo(reciboNuevo, nombrePdf);
+    const nombrePdf = body.idPago; 
+    const resul =  await this.pagosService.crearRecibo(reciboNuevo, nombrePdf);
+    console.log('Resultado', resul);
+    return res.json({nombrePdf});
 
     // if (crearRecibo !== null) {
     //   let direccionEmail = 'chiche84@gmail.com';
@@ -93,8 +93,7 @@ export class PagosController {
   
   @Get('enviarrecibo/:nombre/:email')
   async enviarRecibo(@Param('nombre') nombreArchivo: string, @Param('email') email: string, @Res() res: Response){
-    console.log('-',nombreArchivo);
-    console.log(email);
+    
     const enviarMail = await this.pagosService.enviarEmailRecibo(email, nombreArchivo);
       if (enviarMail !== null) {
         return res.status(HttpStatus.OK).json({
@@ -115,9 +114,10 @@ export class PagosController {
     res.download(__dirname + `../../../../${nombreArchivo}.pdf`, (err) => {
       if (err){
         console.log('No se encontro el archivo');  
-        res.json({ok: false, msj: 'No se encontro el archivo'})
+        res.json({ok: false, msj: 'No se encontro el archivo'});
         res.end();
-      }else{        
+      }else{       
+        unlink(`./${nombreArchivo}.pdf`); 
       }
     });    
   }
