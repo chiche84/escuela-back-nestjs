@@ -6,6 +6,10 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Ipago } from './interfaces/pago.interface';
 import { OpService } from '../op/op.service';
 import { UpdateOpDto } from '../op/dto/update-op.dto';
+import { unlink, writeFile, readFile  } from 'fs/promises';
+import * as nodemailer from 'nodemailer';
+import path = require('path');
+import html_to_pdf = require('html-pdf-node');
 
 @Injectable()
 export class PagosService {
@@ -73,6 +77,81 @@ export class PagosService {
     return pagos;
   }
   
+  async crearRecibo(recibo: string, nombre:string){
+    let options = {width:'646px', heigth:'359px', path: '',  args: ['--no-sandbox', '--disable-setuid-sandbox'] }; 
+   
+    let html = '';
+    await readFile(recibo, 'utf8')
+      .then(arch => {
+                  html = arch;                  
+                  //return writeFile('./htmlicito.html',html);
+                  writeFile('./htmlicito.html',html);
+      })
+      .then(resp=> { console.log("Ruta: ", resp)})
+      .catch(console.log)
+
+    let absolutePath = path.resolve("./htmlicito.html");    
+    let file = { url: absolutePath}
+
+    //convierte bien si viene el objeto url completo con el html completo (con encabezado y todo)
+    await html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
+      console.log("PDF Buffer: ", pdfBuffer); 
+      writeFile(`./${nombre}.pdf`, pdfBuffer).then(resp=> {
+        console.log('PDF creado', resp);
+        return 'PDF creado';
+      })
+        .catch( (err)=> {
+              if (err) {
+                console.log("ERROR AL ESCRIBIR 1",err);
+                return null;
+              }
+            });
+
+    }).catch(error => {
+          console.log(error);
+          return null;
+    });
+
+  }
+
+  async enviarEmailRecibo(email: string, nombrearchivo: string){
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'elantigal@gmail.com',
+        pass: 'dtqugmeaeubkuhfh'
+      }
+    });
+    
+    let mailOptions = {
+      from: 'elantigal@gmail.com',
+      to: email,
+      subject: `Recibo Email`,
+      html:`Se adjunta el recibo de pago`,
+      attachments: [           
+        {   
+          path: `./${nombrearchivo}.pdf`
+        },
+      ]
+    };
+
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+        return null;
+      } else {
+        console.log('Email enviado: ' + info.response);
+        //aca debo eliminar el recibo que ya se envio
+        //unlink(`./${nombrearchivo}.pdf`);
+        return 'Email enviado';
+      }
+    });
+  }
+
+  async descargarRecibo(){
+
+  }
+
   findAll() {
     return `This action returns all pagos`;
   }

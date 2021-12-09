@@ -2,13 +2,13 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UsePipes, Validation
 import { PagosService } from './pagos.service';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { UpdatePagoDto } from './dto/update-pago.dto';
-import { Response } from 'express';
+import { response, Response } from 'express';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import html_to_pdf = require('html-pdf-node');
 import path = require('path');
-import * as fs from 'fs/promises';
 import * as nodemailer from 'nodemailer';
+import { unlink, writeFile, readFile  } from 'fs/promises';
 
 @Controller('pagos')
 export class PagosController {
@@ -62,103 +62,66 @@ export class PagosController {
       }
     })
   }))
-  async subirRecibo(@Res() res: Response, @UploadedFiles() files: Express.Multer.File[] ) {
+  async subirRecibo(@Body() body, @Res() res: Response, @UploadedFiles() files: Express.Multer.File[] ) {
           
     const reciboNuevo = files['recibo'][0].path;   
-    let options = {width:'646px', heigth:'359px', path: '',  args: ['--no-sandbox', '--disable-setuid-sandbox'] }; 
-   
-    let html = '';
-    await fs.readFile(reciboNuevo, 'utf8')
-      .then(arch => {
-                  html = arch;                  
-                  return fs.writeFile('./htmlicito.html',html);
-      })
-      .then(resp=> { console.log("Ruta: ", resp)})
-      .catch(console.log)
+    const nombrePdf = body.idPago;    
+    return await this.pagosService.crearRecibo(reciboNuevo, nombrePdf);
 
-    let absolutePath = path.resolve("./htmlicito.html");    
-    let file = { url: absolutePath}
-
-    let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'elantigal@gmail.com',
-        pass: 'dtqugmeaeubkuhfh'
-      }
-    });
-    
-    let mailOptions = {}
-
-    //convierte bien si viene el objeto url completo con el html completo (con encabezado y todo)
-    await html_to_pdf.generatePdf(file, options).then(pdfBuffer => {
-      console.log("PDF Buffer: ", pdfBuffer); 
-      fs.writeFile('./htmlicito.pdf', pdfBuffer).then()
-        .catch( (err)=> {
-              if (err) {
-                console.log("ERROR AL ESCRIBIR 1",err);
-              }
-            });
-
-      mailOptions = {
-        from: 'elantigal@gmail.com',
-        to: 'chiche84@gmail.com',
-        subject: `Recibo Email`,
-        html:`Se adjunta el recibo de pago del mes de..`,
-        attachments: [           
-          {   // binary buffer as an attachment
-            filename: 'recibito.pdf',
-            content: Buffer.from(pdfBuffer,'utf-8')
-        },
-        ]
-      };
-
-    }).catch(error => console.log(error));
-    
-    transporter.sendMail(mailOptions, function(error, info){
-              if (error) {
-                console.log(error);
-                return res.status(HttpStatus.CONFLICT).json({
-                  ok: false,
-                  msj: error
-                }) 
-              } else {
-                console.log('Email enviado: ' + info.response);
-                return res.status(HttpStatus.OK).json({
-                  ok: true,
-                  msj: 'Email enviado'
-                })
-              }
-            });
-
-    
-    
-    //este convierte pal aca.. nose porque.. buscar otro o sino busar html a imagen
-    // pdf.create(html).toFile('./pdficito.pdf',function(err, res) {
-    //   if (err) {
-    //       console.log('chelink',err)
-    //   } else {          
-    //       console.log('res',res);         
-    //     }
-    // });
-    
-
-    // try {
-
-    //   return res.status(HttpStatus.OK).json({
-    //     ok: true,
-    //     msj: "Se subio el recibo",
-    //     reciboNuevo
-    //   })
-      
-    // } catch (error) {
-    //     return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json({
-    //       ok:false,
-    //       msj: error,
-    //       reciboNuevo: ''
+    // if (crearRecibo !== null) {
+    //   let direccionEmail = 'chiche84@gmail.com';
+    //   const enviarMail = await this.pagosService.enviarEmailRecibo(direccionEmail,nombrePdf);
+    //   if (enviarMail !== null) {
+    //     return res.status(HttpStatus.OK).json({
+    //       ok: true,
+    //       msj: 'Email enviado correctamente a ' + direccionEmail, 
     //     })
-    // } 
+    //   }else{
+    //     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    //       ok: false,
+    //       msj: 'No se pudo enviar el Email', 
+    //     })
+    //   }
+    // }else{
+    //   return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+    //     ok: false,
+    //     msj: 'No se pudo crear el recibo', 
+    //   })
+    // }
+
   }
   
+  @Get('enviarrecibo/:nombre/:email')
+  async enviarRecibo(@Param('nombre') nombreArchivo: string, @Param('email') email: string, @Res() res: Response){
+    console.log('-',nombreArchivo);
+    console.log(email);
+    const enviarMail = await this.pagosService.enviarEmailRecibo(email, nombreArchivo);
+      if (enviarMail !== null) {
+        return res.status(HttpStatus.OK).json({
+          ok: true,
+          msj: 'Email enviado correctamente a ' + email, 
+        })
+      }else{
+        return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          ok: false,
+          msj: 'No se pudo enviar el Email', 
+        })
+      }
+  }
+  
+  @Get('descargarrecibo/:nombre')
+  async descargarRecibo(@Param('nombre') nombreArchivo: string, @Res() res: Response){
+
+    res.download(__dirname + `../../../../${nombreArchivo}.pdf`, (err) => {
+      if (err){
+        console.log('No se encontro el archivo');  
+        res.json({ok: false, msj: 'No se encontro el archivo'})
+        res.end();
+      }else{        
+      }
+    });    
+  }
+
   @Get()
   findAll() {
     return this.pagosService.findAll();
