@@ -52,7 +52,7 @@ export class AlumnosxServiciosService {
             })
             .populate({
                       path: 'idServicio', 
-                      select:'tipoGeneracion precio',
+                      select:'descripcion tipoGeneracion precio',
                       match: { estaActivo: { $eq: true} }
             });
   }

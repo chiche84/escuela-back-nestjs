@@ -20,101 +20,117 @@ constructor(private readonly AlumnosxserviciosServicio: AlumnosxServiciosService
         let servGenerados = 0;
         const fechaActual: Date =  new Date(Date.now());
         let arrayAjustes: string[] = [];
+        let descripcionOP = '';
         
         //**CON PROMESAS.. FUNCIONA SECUENCIAL... */    
         const listaAlumnosxServicios = await this.AlumnosxserviciosServicio.listarServxAlumnosByFechaAjustePromise(fechaActual);
         //recorro alumnosxservicios (cada registro puede tener uno o mas ajustes.. esto ya no es asi)
         for (let index = 0; index < listaAlumnosxServicios.length; index++) {
             const elementServicio = listaAlumnosxServicios[index] as any;
-                total++;
-                arrayAjustes = [];
-                                
-                console.log('promesa '+total +'--> ', elementServicio);
-                totalInterno = 0;
-                servGenerados = 0;
+            total++;
+            arrayAjustes = [];                            
+            console.log('promesa '+total +'--> ', elementServicio);
+            totalInterno = 0;
+            servGenerados = 0;
+            descripcionOP = '';  
 
-                if (elementServicio.idAjustes) { //SERVICIO TIENE AJUSTES, CONTROLAR SI AFECTAN AL GENERAR
-                    for (let index = 0; index < elementServicio.idAjustes.length; index++) { //recorro los ajustes
-                        const elementAjuste = elementServicio.idAjustes[index] as IAjuste;  
-                        if (elementAjuste.modoAplicacion === EModosAplicacion.AlGenerar) { //el ajuste modifica el precio del servicio (al generarse)
-                            totalInterno++;
-                            switch ( elementServicio.idServicio.tipoGeneracion) {
-                                case ETiposGeneracion.Mensual:                                 
-                                //controlo que el servicio de ese alumno con los ajustes que se crean al generar, este generado ya:
-                                servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(elementServicio._id, fechaActual, elementAjuste._id)).length;
-                                console.log('Servicios ya generados(con ajustes al gen) - iteracion '+ total + ' -aju ' + totalInterno + ' -cantServExistentes '+ servGenerados + '-ajuste:' + elementAjuste._id);
-                                if (servGenerados === 0) //si no esta generado el servicio (op) lo agrego al array para insertar todo el array junto en el OP (con los ajustes que corresponden a ese servicio)
-                                {      
-                                    elementServicio.idServicio.precio = elementServicio.idServicio.precio + elementAjuste.monto             
-                                    arrayAjustes.push(elementAjuste._id)
-                                }                             
-                                break;
-                                case ETiposGeneracion.Anual:
-                                    break;
-                                case ETiposGeneracion.Diaria:    
-                                case ETiposGeneracion.Ocasional:                                                                
-                                break;
-                            }                            
-                        }
-                    }
-                    if (arrayAjustes.length > 0 && servGenerados === 0) {                        
-                        //guardar array ajustes que se fue armando con los que tienen modo aplicacion: al generar servicio
-                        await this.opServicio.crearOp({   descripcion: 'iteracion ' + total, 
-                                                                        monto: elementServicio.idServicio.precio, 
-                                                                        saldo: elementServicio.idServicio.precio, 
-                                                                        fechaGeneracion: fechaActual,
-                                                                        idAlumnoxServicioGen: elementServicio._id,
-                                                                        idAjustesAplicados: arrayAjustes })
-                        console.log('GUARDADA OP iteracion '+ total + ' -aju' + totalInterno);
-                    }else if (servGenerados === 0){ //no tiene ajustes que se apliquen al generar (tiene ajustes pero que se aplican en otras condiciones)
-                            //controlar que no este creada ya en el periodo de tiempo de la generacion
-                            switch ( elementServicio.idServicio.tipoGeneracion) {
-                                case ETiposGeneracion.Mensual:                                 
-                                //controlo que el servicio de ese alumno (SIN AJUSTES) este generado ya:
-                                servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(elementServicio._id, fechaActual)).length;
-                                console.log('Servicios ya generados (sin ajustes al gen) - iteracion '+ total + ' -aju ' + totalInterno + ' -cantServExistentes '+ servGenerados );                         
-                                break;
-                                case ETiposGeneracion.Anual:
-                                    break;
-                                case ETiposGeneracion.Diaria:                                
-                                break;
-                            }            
-                            if (servGenerados === 0) {
-                                //no tiene ajustes, debe crearse directamente con el arrayAjustes vacio y sin modificaciones del precio
-                                await this.opServicio.crearOp({   descripcion: 'iteracion ' + total, 
-                                                    monto: elementServicio.idServicio.precio, 
-                                                    saldo: elementServicio.idServicio.precio, 
-                                                    fechaGeneracion: fechaActual,
-                                                    idAlumnoxServicioGen: elementServicio._id,
-                                                    idAjustesAplicados: [] })
-                                console.log('GUARDADA OP (sin ajustes de tipo al generar) iteracion '+ total + ' -aju' + totalInterno);                        
-                            }
-                    }
+            switch ( elementServicio.idServicio.tipoGeneracion) {
+                case ETiposGeneracion.Mensual:                                 
+                        //obtengo mes para anexarlo a la descripcion
+                        descripcionOP = fechaActual.toLocaleString('es-ES', { month: 'long' });
+                        elementServicio.idServicio.descripcion = elementServicio.idServicio.descripcion + ' de ' + descripcionOP;
+                break;
+                case ETiposGeneracion.Anual:
+                    break;
+                case ETiposGeneracion.Diaria:                                
+                    break;
+            }     
+            
 
-                }else{ //EL SERVICIO NO TIENE AJUSTES
-                    //controlar que no este creada ya en el periodo de tiempo de la generacion
-                    switch ( elementServicio.idServicio.tipoGeneracion) {
-                        case ETiposGeneracion.Mensual:                                 
-                        //controlo que el servicio de ese alumno (SIN AJUSTES) este generado ya:
-                        servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(elementServicio._id, fechaActual)).length;
-                        console.log('Servicios ya generados (sin ajustes) - iteracion '+ total + ' -aju ' + totalInterno + ' -cantServExistentes '+ servGenerados );                         
-                        break;
-                        case ETiposGeneracion.Anual:
+            if (elementServicio.idAjustes) { //SERVICIO TIENE AJUSTES, CONTROLAR SI AFECTAN AL GENERAR
+                for (let index = 0; index < elementServicio.idAjustes.length; index++) { //recorro los ajustes
+                    const elementAjuste = elementServicio.idAjustes[index] as IAjuste;  
+                    if (elementAjuste.modoAplicacion === EModosAplicacion.AlGenerar) { //el ajuste modifica el precio del servicio (al generarse)
+                        totalInterno++;
+                        switch ( elementServicio.idServicio.tipoGeneracion) {
+                            case ETiposGeneracion.Mensual:                                 
+                            //controlo que el servicio de ese alumno con los ajustes que se crean al generar, este generado ya:
+                            servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(elementServicio._id, fechaActual, elementAjuste._id)).length;
+                            console.log('Servicios ya generados(con ajustes al gen) - iteracion '+ total + ' -aju ' + totalInterno + ' -cantServExistentes '+ servGenerados + '-ajuste:' + elementAjuste._id);
+                            if (servGenerados === 0) //si no esta generado el servicio (op) lo agrego al array para insertar todo el array junto en el OP (con los ajustes que corresponden a ese servicio)
+                            {                                     
+                                elementServicio.idServicio.precio = elementServicio.idServicio.precio + elementAjuste.monto             
+                                arrayAjustes.push(elementAjuste._id)
+                            }                             
                             break;
-                        case ETiposGeneracion.Diaria:                                
-                        break;
-                    }            
-                    if (servGenerados === 0) {
-                        //no tiene ajustes, debe crearse directamente con el arrayAjustes vacio y sin modificaciones del precio
-                        await this.opServicio.crearOp({   descripcion: 'iteracion ' + total, 
-                                            monto: elementServicio.idServicio.precio, 
-                                            saldo: elementServicio.idServicio.precio, 
-                                            fechaGeneracion: fechaActual,
-                                            idAlumnoxServicioGen: elementServicio._id,
-                                            idAjustesAplicados: [] })
-                        console.log('GUARDADA OP (sin ajustes) iteracion '+ total + ' -aju' + totalInterno);                        
+                            case ETiposGeneracion.Anual:
+                                break;
+                            case ETiposGeneracion.Diaria:    
+                            case ETiposGeneracion.Ocasional:                                                                
+                            break;
+                        }                            
                     }
-                }      
+                }
+                if (arrayAjustes.length > 0 && servGenerados === 0) {                                          
+                    //guardar array ajustes que se fue armando con los que tienen modo aplicacion: al generar servicio
+                    await this.opServicio.crearOp({   descripcion: elementServicio.idServicio.descripcion, 
+                                                                    monto: elementServicio.idServicio.precio, 
+                                                                    saldo: elementServicio.idServicio.precio, 
+                                                                    fechaGeneracion: fechaActual,
+                                                                    idAlumnoxServicioGen: elementServicio._id,
+                                                                    idAjustesAplicados: arrayAjustes })
+                    console.log('GUARDADA OP iteracion '+ total + ' -aju' + totalInterno);
+                }else if (servGenerados === 0){ //no tiene ajustes que se apliquen al generar (tiene ajustes pero que se aplican en otras condiciones)
+                        //controlar que no este creada ya en el periodo de tiempo de la generacion
+                        switch ( elementServicio.idServicio.tipoGeneracion) {
+                            case ETiposGeneracion.Mensual:                                 
+                            //controlo que el servicio de ese alumno (SIN AJUSTES) este generado ya:
+                            servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(elementServicio._id, fechaActual)).length;
+                            console.log('Servicios ya generados (sin ajustes al gen) - iteracion '+ total + ' -aju ' + totalInterno + ' -cantServExistentes '+ servGenerados );                                                     
+                            break;
+                            case ETiposGeneracion.Anual:
+                                break;
+                            case ETiposGeneracion.Diaria:                                
+                            break;
+                        }            
+                if (servGenerados === 0) {                           
+                    //no tiene ajustes, debe crearse directamente con el arrayAjustes vacio y sin modificaciones del precio
+                    await this.opServicio.crearOp({   descripcion: elementServicio.idServicio.descripcion, 
+                                        monto: elementServicio.idServicio.precio, 
+                                        saldo: elementServicio.idServicio.precio, 
+                                        fechaGeneracion: fechaActual,
+                                        idAlumnoxServicioGen: elementServicio._id,
+                                        idAjustesAplicados: [] })
+
+                    console.log('GUARDADA OP (sin ajustes de tipo al generar) iteracion '+ total + ' -aju' + totalInterno);                        
+                }
+                }
+
+            }else{ //EL SERVICIO NO TIENE AJUSTES
+                //controlar que no este creada ya en el periodo de tiempo de la generacion
+                switch ( elementServicio.idServicio.tipoGeneracion) {
+                    case ETiposGeneracion.Mensual:                                 
+                    //controlo que el servicio de ese alumno (SIN AJUSTES) este generado ya:
+                    servGenerados = (await this.opServicio.buscarPorAlumnoxServicioMes(elementServicio._id, fechaActual)).length;
+                    console.log('Servicios ya generados (sin ajustes) - iteracion '+ total + ' -aju ' + totalInterno + ' -cantServExistentes '+ servGenerados ); 
+                    break;
+                    case ETiposGeneracion.Anual:
+                        break;
+                    case ETiposGeneracion.Diaria:                                
+                    break;
+                }            
+                if (servGenerados === 0) {                   
+                    //no tiene ajustes, debe crearse directamente con el arrayAjustes vacio y sin modificaciones del precio
+                    await this.opServicio.crearOp({   descripcion: elementServicio.idServicio.descripcion, 
+                                        monto: elementServicio.idServicio.precio, 
+                                        saldo: elementServicio.idServicio.precio, 
+                                        fechaGeneracion: fechaActual,
+                                        idAlumnoxServicioGen: elementServicio._id,
+                                        idAjustesAplicados: [] })
+                    console.log('GUARDADA OP (sin ajustes) iteracion '+ total + ' -aju' + totalInterno + 'desc:' + elementServicio.idServicio.descripcion);                        
+                }
+            }   
+            descripcionOP = '';   
         }
                         
         //CON OBS NO FUNCIONA PORQUE NOSE COMO HACER PARA TRATAR LA RESP COMO OBS (from) y usar un await adentro (no se puede hacer eso)
