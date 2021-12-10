@@ -7,7 +7,7 @@ import { AlumnosController } from './alumnos.controller';
 @Module({
   imports: [
     MongooseModule.forFeature([{name: 'Alumnos', schema: AlumnoSchema}], 'ConexionEscuelaDeDanza' ),      
-    MongooseModule.forFeature([{name: 'AlumnosAtlas', schema: AlumnoSchema}], 'ConexionEscuelaDeDanzaAtlas' )      
+    //MongooseModule.forFeature([{name: 'AlumnosAtlas', schema: AlumnoSchema}], 'ConexionEscuelaDeDanzaAtlas' )      
   ],
   controllers: [
     AlumnosController,    
