@@ -7,7 +7,11 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+    credentials: true,
+    optionsSuccessStatus: 200    
+  });
   app.setGlobalPrefix('api/v1');  
 
   const config = new DocumentBuilder()
