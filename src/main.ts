@@ -8,7 +8,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({
-    origin: '*',
+    origin: ['https://www.elantigaljujuy.com.ar','https://app.elantigaljujuy.com.ar','https://elantigaljujuy.com.ar'],
     credentials: true,
     optionsSuccessStatus: 200    
   });
