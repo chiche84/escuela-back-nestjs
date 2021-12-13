@@ -7,12 +7,12 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.enableCors({
-    origin: ['https://www.elantigaljujuy.com.ar','https://app.elantigaljujuy.com.ar','https://elantigaljujuy.com.ar'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-    optionsSuccessStatus: 200    
-  });
+  // app.enableCors({
+  //   origin: ['https://www.elantigaljujuy.com.ar','https://app.elantigaljujuy.com.ar','https://elantigaljujuy.com.ar'],
+  //   allowedHeaders: ['Content-Type', 'Authorization'],
+  //   credentials: true,
+  //   optionsSuccessStatus: 200    
+  // });
   app.setGlobalPrefix('api/v1');  
 
   const config = new DocumentBuilder()
