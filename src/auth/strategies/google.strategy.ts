@@ -12,7 +12,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
             clientID: '1034622234436-iq5dig17t1f9r6vke8suav63jvfiivn3.apps.googleusercontent.com',
             clientSecret: 'CgDlU0QNL7Sct9EXTK-8CWkE',
             // callbackURL: 'http://localhost:8000/api/v1/auth/google/callback',
-            callbackURL: 'http://app.elantigaljujuy.com.ar/api/v1/auth/google/callback',
+            callbackURL: 'https://app.elantigaljujuy.com.ar/api/v1/auth/google/callback',
             scope: ['email', 'profile'],
             function(req, res){
                 res.json({
