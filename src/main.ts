@@ -11,7 +11,7 @@ async function bootstrap() {
     origin: ['*'],
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'DNT','X-CustomHeader','Keep-Alive','User-Agent','X-Requested-With','If-Modified-Since','Cache-Control'],
-    //credentials: true,
+    credentials: true,
     optionsSuccessStatus: 200    
   });
   app.setGlobalPrefix('api/v1');  
